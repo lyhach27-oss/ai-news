@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VISUAL LAB — AI News Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0B14;
+  --surface:rgba(255,255,255,0.03);
+  --border:rgba(255,255,255,0.07);
+  --text:#EDEAE0;
+  --sub:#B8BACE;
+  --muted:#8A8DA8;
+  --big:#9BB5FF;
+  --img:#C8B0FF;
+  --big-soft:rgba(155,181,255,0.12);
+  --img-soft:rgba(200,176,255,0.12);
+}
+html,body{
+  background:var(--bg);
+  min-height:100vh;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--text);
+}
+/* 배경 */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 80% 10%, rgba(120,140,255,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 90%, rgba(200,176,255,0.06) 0%, transparent 45%);
+  pointer-events:none;
+  z-index:0;
+}
+/* 그리드 배경 */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(237,234,224,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(237,234,224,0.03) 1px, transparent 1px);
+  background-size:32px 32px;
+  pointer-events:none;
+  z-index:0;
+}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:48px 32px 80px;}
+
+/* 헤더 */
+.site-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:32px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:48px;
+}
+.wordmark{display:flex;align-items:center;gap:12px;}
+.wordmark span{font-size:17px;font-weight:900;letter-spacing:0.22em;color:var(--text);}
+.header-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.15em;}
+
+/* 히어로 */
+.hero{margin-bottom:56px;}
+.hero-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:0.35em;color:var(--muted);
+  margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(36px,5vw,56px);
+  font-weight:900;line-height:1.1;
+  letter-spacing:-0.03em;
+  color:var(--text);
+  margin-bottom:12px;
+}
+.hero-title .hl-big{color:var(--big);}
+.hero-title .hl-img{color:var(--img);}
+.hero-sub{
+  font-size:14px;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:0.05em;
+}
+
+/* 최신 카드 하이라이트 */
+.latest-section{margin-bottom:56px;}
+.section-label{
+  display:flex;align-items:center;gap:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;letter-spacing:0.3em;color:var(--muted);
+  margin-bottom:20px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.latest-card{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:28px 32px;
+  border:1px solid rgba(155,181,255,0.25);
+  background:linear-gradient(135deg,rgba(155,181,255,0.07),rgba(200,176,255,0.04));
+  text-decoration:none;
+  transition:all 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+.latest-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(to right,transparent,var(--big) 40%,var(--big) 60%,transparent);
+  opacity:0.6;
+}
+.latest-card:hover{
+  border-color:rgba(155,181,255,0.5);
+  background:linear-gradient(135deg,rgba(155,181,255,0.12),rgba(200,176,255,0.07));
+  transform:translateY(-2px);
+}
+.latest-info{}
+.latest-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:4px 12px;
+  border:1px solid var(--big);background:var(--big-soft);
+  margin-bottom:14px;
+}
+.latest-badge .pulse{
+  width:6px;height:6px;border-radius:50%;background:var(--big);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.latest-badge span{font-size:10px;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:var(--big);}
+.latest-date{
+  font-family:'Noto Serif KR',serif;
+  font-size:28px;font-weight:900;letter-spacing:-0.02em;color:var(--text);
+  margin-bottom:8px;
+}
+.latest-count{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;}
+.latest-arrow{
+  font-size:32px;color:var(--big);opacity:0.6;
+  transition:all 0.2s;
+  font-family:'JetBrains Mono',monospace;
+}
+.latest-card:hover .latest-arrow{opacity:1;transform:translateX(4px);}
+
+/* 아카이브 그리드 */
+.archive-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;
+}
+.archive-item{
+  display:flex;flex-direction:column;
+  padding:20px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  text-decoration:none;
+  transition:all 0.18s;
+  position:relative;
+  overflow:hidden;
+}
+.archive-item::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:var(--big);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.2s;
+}
+.archive-item:hover{border-color:rgba(155,181,255,0.3);background:rgba(155,181,255,0.04);}
+.archive-item:hover::after{transform:scaleX(1);}
+.archive-item-date{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;font-weight:600;color:var(--text);
+  letter-spacing:0.05em;margin-bottom:8px;
+}
+.archive-item-dow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--muted);letter-spacing:0.2em;
+  margin-bottom:12px;
+}
+.archive-item-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tag{
+  font-size:9px;letter-spacing:0.2em;
+  padding:3px 8px;font-family:'JetBrains Mono',monospace;
+}
+.tag.big{border:1px solid rgba(155,181,255,0.4);color:var(--big);}
+.tag.img{border:1px solid rgba(200,176,255,0.4);color:var(--img);}
+.archive-item-arrow{
+  position:absolute;top:20px;right:20px;
+  font-size:14px;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  opacity:0;transition:opacity 0.18s;
+}
+.archive-item:hover .archive-item-arrow{opacity:1;}
+
+/* 빈 상태 */
+.empty-item{
+  padding:20px;
+  border:1px dashed var(--border);
+  opacity:0.35;
+  display:flex;align-items:center;justify-content:center;
+}
+.empty-item span{
+  font-size:10px;letter-spacing:0.3em;
+  font-family:'JetBrains Mono',monospace;color:var(--muted);
+}
+
+/* 푸터 */
+.site-footer{
+  margin-top:80px;padding-top:24px;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.site-footer .fl{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);letter-spacing:0.1em;}
+
+/* 반응형 */
+@media(max-width:640px){
+  .wrap{padding:32px 20px 60px;}
+  .site-header{flex-direction:column;align-items:flex-start;gap:12px;}
+  .latest-card{flex-direction:column;align-items:flex-start;gap:16px;}
+  .hero-title{font-size:32px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="wordmark">
+      <svg width="22" height="22" viewBox="0 0 28 28">
+        <path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+        <path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="header-meta">AI NEWS ARCHIVE</div>
+  </header>
+
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="hero-label">DAILY BRIEFING</div>
+    <h1 class="hero-title">
+      매일 아침<br>
+      <span class="hl-big">AI 빅뉴스</span> +
+      <span class="hl-img">이미지/영상 AI</span>
+    </h1>
+    <p class="hero-sub">8 CARDS · PERIWINKLE + LAVENDER · UPDATED 09:00 KST</p>
+  </section>
+
+  <!-- 최신 -->
+  <section class="latest-section">
+    <div class="section-label">LATEST</div>
+    <a href="./2026-04-27.html" class="latest-card">
+      <div class="latest-info">
+        <div class="latest-badge">
+          <div class="pulse"></div>
+          <span>TODAY</span>
+        </div>
+        <div class="latest-date">2026.04.27 MON</div>
+        <div class="latest-count">AI 빅뉴스 3건 · 이미지/영상 AI 4건 · 총 8장</div>
+      </div>
+      <div class="latest-arrow">→</div>
+    </a>
+  </section>
+
+  <!-- 아카이브 -->
+  <section>
+    <div class="section-label">ARCHIVE</div>
+    <div class="archive-grid" id="archiveGrid">
+      <!-- JS로 동적 생성 -->
+    </div>
+  </section>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <span class="fl">VISUAL LAB © 2026</span>
+    <span class="fl">POWERED BY CLAUDE AI</span>
+  </footer>
+
+</div>
+
+<script>
+// 아카이브 날짜 목록 (날짜가 추가될수록 여기에 추가)
+const archive = [
+  { date: '2026-04-27', dow: 'MON', big: 3, img: 4, latest: true },
+  // 앞으로 날짜 추가 예시:
+  // { date: '2026-04-28', dow: 'TUE', big: 3, img: 4 },
+];
+
+const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const grid = document.getElementById('archiveGrid');
+
+// 최신 제외한 아카이브
+const past = archive.filter(a => !a.latest);
+
+if(past.length === 0){
+  // 빈 상태 표시
+  for(let i = 0; i < 6; i++){
+    const el = document.createElement('div');
+    el.className = 'empty-item';
+    el.innerHTML = '<span>UPCOMING</span>';
+    grid.appendChild(el);
+  }
+} else {
+  past.forEach(item => {
+    const d = new Date(item.date);
+    const display = item.date.replace(/-/g, '.').slice(2); // YY.MM.DD
+    const el = document.createElement('a');
+    el.className = 'archive-item';
+    el.href = `./${item.date}.html`;
+    el.innerHTML = `
+      <div class="archive-item-date">${display}</div>
+      <div class="archive-item-dow">${item.dow}</div>
+      <div class="archive-item-tags">
+        <span class="tag big">AI 빅뉴스 ${item.big}</span>
+        <span class="tag img">이미지 AI ${item.img}</span>
+      </div>
+      <span class="archive-item-arrow">↗</span>
+    `;
+    grid.appendChild(el);
+  });
+}
+</script>
+</body>
+</html>

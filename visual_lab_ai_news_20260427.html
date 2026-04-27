@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VISUAL LAB — AI News · 2026.04.27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:#0A0B14;min-height:100vh;font-family:'Noto Sans KR',sans-serif;color:#EDEAE0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;}
+.viewer{display:flex;flex-direction:column;align-items:center;gap:0;}
+.card{width:420px;height:560px;position:relative;overflow:hidden;display:none;
+  background:radial-gradient(ellipse at 80% 0%,rgba(120,140,255,0.18) 0%,transparent 55%),
+             radial-gradient(ellipse at 0% 100%,rgba(200,176,255,0.08) 0%,transparent 50%),
+             linear-gradient(180deg,#0A0B14 0%,#0A0B14 100%);}
+.card.active{display:block;}
+/* 코너 장식 */
+.corner{position:absolute;width:14px;height:14px;opacity:0.7;}
+.corner.tl{top:18px;left:18px;border-top:1px solid var(--ac);border-left:1px solid var(--ac);}
+.corner.tr{top:18px;right:18px;border-top:1px solid var(--ac);border-right:1px solid var(--ac);}
+.corner.bl{bottom:18px;left:18px;border-bottom:1px solid var(--ac);border-left:1px solid var(--ac);}
+.corner.br{bottom:18px;right:18px;border-bottom:1px solid var(--ac);border-right:1px solid var(--ac);}
+/* glow 라인 */
+.glow-line{position:absolute;top:0;left:0;right:0;height:1px;opacity:0.7;background:linear-gradient(to right,transparent,var(--ac) 40%,var(--ac) 60%,transparent);}
+/* 헤더 */
+.card-header{position:absolute;top:36px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;}
+.wordmark{display:flex;align-items:center;gap:10px;}
+.wordmark span{font-size:15px;font-weight:900;letter-spacing:0.22em;color:#EDEAE0;}
+.card-num{display:flex;align-items:baseline;gap:4px;font-family:'JetBrains Mono',monospace;}
+.card-num .cur{font-size:18px;font-weight:700;color:#EDEAE0;letter-spacing:-0.02em;}
+.card-num .tot{font-size:12px;color:#8A8DA8;}
+/* CAT 칩 */
+.cat-chip{position:absolute;top:84px;left:32px;display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid var(--ac);background:var(--ac-soft);}
+.cat-chip .c1{font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:var(--ac);}
+.cat-chip .dot{font-size:9px;color:var(--ac-line);font-family:'JetBrains Mono',monospace;}
+.cat-chip .c2{font-size:11px;font-weight:500;letter-spacing:0.08em;color:#EDEAE0;font-family:'JetBrains Mono',monospace;}
+/* 타이틀 */
+.card-title{position:absolute;top:136px;left:32px;right:32px;font-family:'Noto Serif KR',serif;font-size:30px;font-weight:900;line-height:1.2;letter-spacing:-0.035em;color:#EDEAE0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:108px;}
+/* 구분 마크 */
+.divider-mark{position:absolute;top:300px;left:32px;width:32px;height:1px;background:var(--ac-line);}
+/* BRIEF */
+.brief{position:absolute;top:316px;left:32px;right:32px;font-size:13.5px;line-height:1.7;color:#B8BACE;letter-spacing:-0.005em;display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden;}
+/* 푸터 */
+.card-footer{position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid var(--ac-line);display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}
+.footer-source{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;}
+.footer-source .src-name{font-size:11px;font-weight:700;letter-spacing:0.3em;color:#EDEAE0;font-family:'JetBrains Mono',monospace;}
+.footer-source .src-url{font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0.02em;}
+.footer-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--ac);background:var(--ac-soft);font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0;text-decoration:none;}
+.footer-btn span{font-size:12px;font-weight:500;color:#EDEAE0;}
+.footer-btn .arr{font-size:13px;color:var(--ac);}
+/* 그리드 배경 */
+.grid-bg{position:absolute;inset:0;opacity:0.06;pointer-events:none;}
+/* 네비게이션 */
+.nav{display:flex;align-items:center;gap:16px;margin-top:20px;}
+.nav button{width:40px;height:40px;border-radius:50%;border:1px solid rgba(155,181,255,0.3);background:transparent;color:#9BB5FF;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s;font-family:'JetBrains Mono',monospace;}
+.nav button:hover:not(:disabled){opacity:0.8;transform:scale(1.1);}
+.nav button:disabled{opacity:0.25;cursor:not-allowed;}
+.dots{display:flex;gap:6px;align-items:center;}
+.dot{width:6px;height:6px;border-radius:3px;border:none;background:rgba(155,181,255,0.2);cursor:pointer;transition:all 0.25s;padding:0;}
+.dot.active{width:20px;background:#9BB5FF;}
+.dot.past{background:rgba(155,181,255,0.45);}
+.nav-info{margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;letter-spacing:0.1em;}
+/* 표지 전용 */
+.cover-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--ac);background:var(--ac-soft);}
+.cover-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--ac);}
+.cover-badge span{font-size:10px;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:var(--ac);}
+.cover-today{position:absolute;top:140px;left:32px;}
+.cover-today .label{font-size:11px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#8A8DA8;margin-bottom:16px;}
+.cover-today h1{font-family:'Noto Serif KR',serif;font-size:50px;font-weight:900;line-height:1.05;letter-spacing:-0.04em;color:#EDEAE0;}
+.cover-today h1 .hl{color:var(--ac);}
+.cover-accent-line{position:absolute;top:296px;left:32px;width:120px;height:2px;background:linear-gradient(to right,var(--ac),transparent);}
+.cover-divider{position:absolute;top:326px;left:32px;right:32px;height:1px;background:linear-gradient(to right,var(--ac-line),transparent);}
+.cover-index{position:absolute;top:346px;left:32px;right:32px;}
+.cover-index .idx-label{font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#8A8DA8;margin-bottom:16px;}
+.cover-index .idx-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cover-index .idx-left{display:flex;align-items:center;gap:10px;}
+.cover-index .idx-cat{font-size:10px;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;}
+.cover-index .idx-sep{font-size:12px;color:#B8BACE;font-family:'JetBrains Mono',monospace;}
+.cover-index .idx-name{font-size:12px;color:#EDEAE0;}
+.cover-index .idx-count{font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;}
+.cover-footer{position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid var(--ac-line);display:flex;justify-content:space-between;align-items:center;}
+.cover-footer .date{font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;letter-spacing:0.1em;}
+.cover-footer .pnum{font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;}
+/* 반응형 */
+@media(max-width:460px){.card{width:calc(100vw - 32px);height:calc((100vw - 32px) * 560 / 420);}}
+</style>
+</head>
+<body>
+<div class="viewer">
+
+<!-- ── 01 표지 ── -->
+<div class="card active" style="--ac:#9BB5FF;--ac-soft:rgba(155,181,255,0.12);--ac-line:rgba(155,181,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g0" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g0)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="cover-badge"><div class="pulse"></div><span>DAILY</span></div>
+  </div>
+  <div class="cover-today">
+    <div class="label">TODAY'S</div>
+    <h1>AI<br>briefing.</h1>
+  </div>
+  <div class="cover-accent-line"></div>
+  <div class="cover-divider"></div>
+  <div class="cover-index">
+    <div class="idx-label">INDEX</div>
+    <div class="idx-row">
+      <div class="idx-left">
+        <span class="idx-cat" style="color:#9BB5FF;">CAT.01</span>
+        <span class="idx-sep">·</span>
+        <span class="idx-name">AI 빅뉴스</span>
+      </div>
+      <span class="idx-count">3건</span>
+    </div>
+    <div class="idx-row">
+      <div class="idx-left">
+        <span class="idx-cat" style="color:#C8B0FF;">CAT.02</span>
+        <span class="idx-sep">·</span>
+        <span class="idx-name">이미지 / 영상 AI</span>
+      </div>
+      <span class="idx-count">4건</span>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <span class="date">2026.04.27 MON</span>
+    <span class="pnum">01 / 08</span>
+  </div>
+</div>
+
+<!-- ── 02 AI 빅뉴스 #1 ── -->
+<div class="card" style="--ac:#9BB5FF;--ac-soft:rgba(155,181,255,0.12);--ac-line:rgba(155,181,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g1" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g1)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">02</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.01</span><span class="dot">·</span><span class="c2">AI 빅뉴스</span></div>
+  <div class="card-title">NVIDIA, 양자컴퓨팅 가속 AI 모델 Ising 오픈소스 공개</div>
+  <div class="divider-mark"></div>
+  <div class="brief">NVIDIA가 양자 오류 보정과 프로세서 캘리브레이션을 가속화하기 위해 특별 설계된 세계 최초 오픈소스 AI 모델 패밀리 'Ising'을 발표했다. 기존 방식 대비 오류 보정 디코딩 속도 2.5배 향상, 정확도 3배 개선을 달성했다. 하버드, 페르미 국립가속기연구소, 로렌스버클리 국립연구소, IQM 양자컴퓨터 등 주요 기관이 초기 도입처로 참여했다. AI와 양자컴퓨팅의 수렴을 가속화하는 이정표로 평가받고 있다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">CRESCENDO AI</span>
+      <span class="src-url">crescendo.ai/news/latest-ai-news</span>
+    </div>
+    <a href="https://www.crescendo.ai/news/latest-ai-news-and-updates" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- ── 03 AI 빅뉴스 #2 ── -->
+<div class="card" style="--ac:#9BB5FF;--ac-soft:rgba(155,181,255,0.12);--ac-line:rgba(155,181,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g2" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g2)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">03</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.01</span><span class="dot">·</span><span class="c2">AI 빅뉴스</span></div>
+  <div class="card-title">Snap, AI 이유로 직원 1,000명 감원…코드 65% AI 생성</div>
+  <div class="divider-mark"></div>
+  <div class="brief">Snap CEO 에반 스피겔이 AI의 급속한 발전을 이유로 약 1,000명을 감원하고 300개 이상의 공석을 폐지한다고 발표했다. 전체 계획 인원의 약 25% 규모다. Snap은 현재 신규 코드의 65% 이상을 AI가 생성하고 있으며, 소규모 팀으로도 동일한 성과를 낼 수 있다고 설명했다. 이번 구조조정으로 2026년 하반기까지 연간 5억 달러 이상의 비용 절감이 예상된다. 발표 후 Snap 주가는 시전 거래에서 11% 상승했다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">CRESCENDO AI</span>
+      <span class="src-url">crescendo.ai/news/snap-layoffs-ai</span>
+    </div>
+    <a href="https://www.crescendo.ai/news/latest-ai-news-and-updates" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- ── 04 AI 빅뉴스 #3 ── -->
+<div class="card" style="--ac:#9BB5FF;--ac-soft:rgba(155,181,255,0.12);--ac-line:rgba(155,181,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g3" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g3)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">04</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.01</span><span class="dot">·</span><span class="c2">AI 빅뉴스</span></div>
+  <div class="card-title">OpenAI, 미디어 토크쇼 TBPN 수백억에 인수</div>
+  <div class="divider-mark"></div>
+  <div class="brief">OpenAI가 실리콘밸리 일간 토크쇼 TBPN(Technology Business Programming Network)을 수백만 달러대에 인수했다. 올해 3,000만 달러 매출을 예상하는 이 미디어 회사는 OpenAI의 첫 미디어 자산 인수다. TBPN은 OpenAI의 전략 조직 산하에 편입되되 편집 독립성은 유지한다. IPO를 앞둔 OpenAI가 AI에 대한 공론 형성에 영향력을 확보하려는 시도로 해석된다. 일론 머스크의 X 인수, 제프 베이조스의 워싱턴포스트 인수와 비교되고 있다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">CRESCENDO AI</span>
+      <span class="src-url">crescendo.ai/news/openai-tbpn</span>
+    </div>
+    <a href="https://www.crescendo.ai/news/latest-ai-news-and-updates" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- ── 05 이미지/영상 AI #1 ── -->
+<div class="card" style="--ac:#C8B0FF;--ac-soft:rgba(200,176,255,0.12);--ac-line:rgba(200,176,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g4" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g4)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">05</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.02</span><span class="dot">·</span><span class="c2">이미지 / 영상 AI</span></div>
+  <div class="card-title">NVIDIA·ComfyUI, GDC서 RTX 영상 생성 대폭 강화</div>
+  <div class="divider-mark"></div>
+  <div class="brief">NVIDIA가 GDC 2026에서 ComfyUI와 협력해 RTX GPU 기반 AI 영상 생성 워크플로우를 대폭 강화했다. ComfyUI의 새 'App View'로 노드 그래프 없이도 간편하게 사용 가능하며, RTX Video Super Resolution으로 실시간 4K 업스케일링이 지원된다. NVFP4/FP8 모델로 RTX 50 시리즈에서 성능 2.5배 향상, VRAM 60% 절감을 달성했다. FLUX.2 Klein과 LTX-2.3 모델의 NVFP4 버전도 출시됐다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">NVIDIA BLOG</span>
+      <span class="src-url">blogs.nvidia.com/rtx-ai-comfyui-gdc</span>
+    </div>
+    <a href="https://blogs.nvidia.com/blog/rtx-ai-garage-flux-ltx-video-comfyui-gdc/" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- ── 06 이미지/영상 AI #2 ── -->
+<div class="card" style="--ac:#C8B0FF;--ac-soft:rgba(200,176,255,0.12);--ac-line:rgba(200,176,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g5" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g5)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">06</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.02</span><span class="dot">·</span><span class="c2">이미지 / 영상 AI</span></div>
+  <div class="card-title">Flux 2, 2026년 로컬 이미지 생성 표준으로 자리잡아</div>
+  <div class="divider-mark"></div>
+  <div class="brief">Black Forest Labs의 Flux 2가 2026년 전문 스튜디오의 로컬 이미지 생성 표준 모델로 자리잡았다. ComfyUI가 Flux 워크플로우의 사실상 표준 인터페이스로 부상했으며, HuggingFace와 Civitai에 수천 개의 Flux 전용 LoRA가 공개됐다. RTX 50 시리즈에서 NVFP4 양자화로 VRAM 40% 절감, 성능 40% 향상이 가능해져 개인 크리에이터도 고품질 로컬 생성이 가능해졌다. Midjourney와 함께 '플랫폼 vs 모델' 2강 구도를 형성하고 있다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">NEURONAD</span>
+      <span class="src-url">neuronad.com/midjourney-vs-flux</span>
+    </div>
+    <a href="https://neuronad.com/midjourney-vs-flux/" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- ── 07 이미지/영상 AI #3 ── -->
+<div class="card" style="--ac:#C8B0FF;--ac-soft:rgba(200,176,255,0.12);--ac-line:rgba(200,176,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g6" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g6)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">07</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.02</span><span class="dot">·</span><span class="c2">이미지 / 영상 AI</span></div>
+  <div class="card-title">ComfyUI Web, Wan 2.2로 무료 텍스트→영상 지원</div>
+  <div class="divider-mark"></div>
+  <div class="brief">ComfyUI Web이 Wan 2.2 모델을 통해 브라우저에서 무료로 텍스트-투-비디오, 이미지-투-비디오 생성을 지원한다. Kling, Runway의 오픈소스 대안으로 주목받고 있으며 별도 GPU나 소프트웨어 설치 없이 클라우드에서 실행된다. Flux, Wan, Seedream 등 40개 이상의 AI 도구를 단일 플랫폼에서 제공하며, 이미지 생성은 5~30초, 영상 생성은 30~120초 내에 완료된다. 상업적 이용도 대부분 가능하다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">COMFYUI WEB</span>
+      <span class="src-url">comfyuiweb.com</span>
+    </div>
+    <a href="https://comfyuiweb.com/" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- ── 08 이미지/영상 AI #4 ── -->
+<div class="card" style="--ac:#C8B0FF;--ac-soft:rgba(200,176,255,0.12);--ac-line:rgba(200,176,255,0.4);">
+  <svg class="grid-bg" width="420" height="560"><defs><pattern id="g7" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#g7)"/></svg>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="glow-line"></div>
+  <div class="card-header">
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num"><span class="cur">08</span><span class="tot">/ 08</span></div>
+  </div>
+  <div class="cat-chip"><span class="c1">CAT.02</span><span class="dot">·</span><span class="c2">이미지 / 영상 AI</span></div>
+  <div class="card-title">Midjourney V8 Alpha, 네이티브 2K 해상도 지원</div>
+  <div class="divider-mark"></div>
+  <div class="brief">Midjourney가 V8 Alpha를 출시하며 네이티브 2K 해상도 생성과 향상된 처리 속도를 선보였다. V7이 안정적인 기본값으로 자리잡은 가운데 V8은 속도와 해상도 면에서 한 단계 더 나아갔다. 독립 웹앱 출시로 Discord 의존도도 줄어들었다. 2,000만 명 이상의 사용자 커뮤니티와 함께 예술적 미감과 스타일 일관성에서 여전히 업계 최고 수준으로 평가받는다. Flux와 함께 이미지 생성 AI 시장의 양대 축을 이루고 있다.</div>
+  <div class="card-footer">
+    <div class="footer-source">
+      <span class="src-name">LS PRIME GROUP</span>
+      <span class="src-url">blog.lsprimegroup.co.nz/ai-image-2026</span>
+    </div>
+    <a href="https://blog.lsprimegroup.co.nz/posts/best-ai-image-generators-2026/" target="_blank" class="footer-btn"><span>원문 보기</span><span class="arr">↗</span></a>
+  </div>
+</div>
+
+<!-- 네비게이션 -->
+<div class="nav">
+  <button id="prev" disabled>←</button>
+  <div class="dots" id="dots"></div>
+  <button id="next">→</button>
+</div>
+<div class="nav-info">← → 키보드 이동 가능</div>
+</div>
+
+<script>
+const cards = document.querySelectorAll('.card');
+const dotsEl = document.getElementById('dots');
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+let cur = 0;
+
+// 도트 생성
+cards.forEach((_,i) => {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(n) {
+  cards[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  if(cur < n) dotsEl.children[cur].classList.add('past');
+  else dotsEl.children[n].classList.remove('past');
+  cur = n;
+  cards[cur].classList.add('active');
+  // 도트 업데이트
+  Array.from(dotsEl.children).forEach((d,i) => {
+    d.className = 'dot';
+    if(i===cur) d.classList.add('active');
+    else if(i<cur) d.classList.add('past');
+  });
+  prev.disabled = cur===0;
+  next.disabled = cur===cards.length-1;
+}
+
+prev.onclick = () => cur > 0 && go(cur-1);
+next.onclick = () => cur < cards.length-1 && go(cur+1);
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowLeft' && cur>0) go(cur-1);
+  if(e.key==='ArrowRight' && cur<cards.length-1) go(cur+1);
+});
+</script>
+</body>
+</html>
