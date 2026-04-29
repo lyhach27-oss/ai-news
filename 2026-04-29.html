@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISUAL LAB AI 뉴스 브리핑 | 2026.04.29</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0A0B14; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Noto Sans KR', sans-serif; padding: 20px; }
+  .viewer { position: relative; width: 420px; }
+  .card { display: none; width: 420px; height: 560px; position: relative; overflow: hidden; background: radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%), radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%), #0A0B14; }
+  .card.active { display: block; }
+  .grid-bg { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M 32 0 L 0 0 0 32' fill='none' stroke='%23EDEAE0' stroke-width='0.5'/%3E%3C/svg%3E"); opacity: 0.06; pointer-events: none; }
+  .glow-top { position: absolute; top: 0; left: 0; right: 0; height: 1px; pointer-events: none; }
+  .corner { position: absolute; width: 14px; height: 14px; opacity: 0.7; }
+  .corner.tl { top: 18px; left: 18px; border-top: 1.5px solid; border-left: 1.5px solid; }
+  .corner.tr { top: 18px; right: 18px; border-top: 1.5px solid; border-right: 1.5px solid; }
+  .corner.bl { bottom: 18px; left: 18px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+  .corner.br { bottom: 18px; right: 18px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+  .wordmark { display: flex; align-items: center; gap: 8px; position: absolute; top: 36px; left: 32px; }
+  .wordmark span { font-size: 12px; font-weight: 900; letter-spacing: 0.22em; font-family: 'JetBrains Mono', monospace; color: #EDEAE0; }
+  .page-num { position: absolute; top: 36px; right: 32px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8A8DA8; letter-spacing: 0.1em; }
+  .footer { position: absolute; bottom: 24px; left: 32px; right: 32px; padding-top: 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .footer-source { display: flex; flex-direction: column; gap: 2px; }
+  .footer-source .src-name { font-size: 11px; font-weight: 700; letter-spacing: 0.3em; font-family: 'JetBrains Mono', monospace; color: #EDEAE0; }
+  .footer-source .src-url { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: #8A8DA8; }
+  .read-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; white-space: nowrap; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .read-btn span { font-size: 11px; font-weight: 500; color: #EDEAE0; }
+  .cat-chip { display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px; }
+  .cat-chip .cat-id { font-size: 10px; letter-spacing: 0.35em; font-family: 'JetBrains Mono', monospace; }
+  .cat-chip .cat-name { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; color: #EDEAE0; }
+  .nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+  .nav button { background: rgba(155,181,255,0.1); border: 1px solid rgba(155,181,255,0.3); color: #9BB5FF; width: 32px; height: 32px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 14px; transition: all 0.2s; }
+  .nav button:hover { background: rgba(155,181,255,0.2); }
+  .dots { display: flex; align-items: center; gap: 6px; }
+  .dot { height: 6px; border-radius: 3px; background: rgba(155,181,255,0.25); transition: all 0.3s; cursor: pointer; }
+  .dot.active { background: #9BB5FF; width: 20px; }
+  .dot:not(.active) { width: 6px; }
+  .dot.prev { background: rgba(155,181,255,0.5); }
+  .nav-info { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8A8DA8; text-align: center; margin-top: 8px; }
+  .logo-svg { flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="viewer">
+
+  <!-- 01 표지 -->
+  <div class="card active" id="card-1">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div>
+    <div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark">
+      <svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div style="position:absolute; top:32px; right:32px;">
+      <div style="display:flex; align-items:center; gap:8px; padding:5px 12px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+        <div style="width:6px; height:6px; border-radius:50%; background:#9BB5FF;"></div>
+        <span style="font-size:10px; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">DAILY</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:100px; left:32px; right:32px;">
+      <div style="font-size:52px; font-weight:900; color:#EDEAE0; line-height:1.05; font-family:'Noto Serif KR',serif; letter-spacing:-0.02em;">TODAY'S<br>AI<br>briefing.</div>
+      <div style="margin-top:20px; width:120px; height:1px; background:linear-gradient(to right, #9BB5FF, transparent);"></div>
+    </div>
+    <div style="position:absolute; top:308px; left:32px; right:32px; height:1px; background:rgba(155,181,255,0.25);"></div>
+    <div style="position:absolute; top:322px; left:32px; right:32px;">
+      <div style="font-size:9px; font-family:'JetBrains Mono',monospace; letter-spacing:0.4em; color:#8A8DA8; margin-bottom:14px;">INDEX</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(155,181,255,0.15);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:#9BB5FF; letter-spacing:0.2em;">CAT.01</span>
+          <span style="font-size:12px; color:#EDEAE0; font-weight:500;">AI 빅뉴스</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">3건</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:#C8B0FF; letter-spacing:0.2em;">CAT.02</span>
+          <span style="font-size:12px; color:#EDEAE0; font-weight:500;">이미지 / 영상 AI</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#C8B0FF;">4건</span>
+      </div>
+    </div>
+    <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(155,181,255,0.25); display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.1em;">2026.04.29 WED</span>
+      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">01 / 08</span>
+    </div>
+  </div>
+
+  <!-- 02 AI 빅뉴스 #1 -->
+  <div class="card" id="card-2">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div>
+    <div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">02 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+        <span class="cat-id" style="color:#9BB5FF;">CAT.01</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(155,181,255,0.4);">·</span>
+        <span class="cat-name">AI 빅뉴스</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">Google, Anthropic에 최대 400억 달러 투자 확정</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#9BB5FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #9BB5FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">Google이 Anthropic에 우선 100억 달러를 투자하고, 성과 목표 달성 시 300억 달러를 추가로 투입하는 계약을 체결했습니다. Anthropic의 현재 밸류에이션은 3,800억 달러로, Amazon의 50억 달러 추가 투자에 이어 일주일 만에 이루어진 메가딜입니다. Anthropic의 연간 반복 수익(ARR)은 2025년 초 10억 달러에서 2026년 4월 300억 달러로 1년 만에 30배 성장했습니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(155,181,255,0.4);">
+      <div class="footer-source"><span class="src-name">TECHCRUNCH</span><span class="src-url">techcrunch.com</span></div>
+      <div class="read-btn" style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#9BB5FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 03 AI 빅뉴스 #2 -->
+  <div class="card" id="card-3">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div>
+    <div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">03 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+        <span class="cat-id" style="color:#9BB5FF;">CAT.01</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(155,181,255,0.4);">·</span>
+        <span class="cat-name">AI 빅뉴스</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">Anthropic 거부 뒤 Google·OpenAI, 미 국방부에 AI 전면 개방</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#9BB5FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #9BB5FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">Anthropic이 국내 대규모 감시와 자율 무기에 AI 사용을 거부하자, 국방부가 Anthropic을 '공급망 위험'으로 지정했습니다. 이후 Google과 OpenAI, xAI가 잇따라 미 국방부와 AI 사용 계약을 체결했습니다. Anthropic은 국방부를 상대로 소송을 제기해 법원에서 가처분 결정을 받아낸 상태입니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(155,181,255,0.4);">
+      <div class="footer-source"><span class="src-name">TECHCRUNCH</span><span class="src-url">techcrunch.com</span></div>
+      <div class="read-btn" style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#9BB5FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 04 AI 빅뉴스 #3 -->
+  <div class="card" id="card-4">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div>
+    <div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">04 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+        <span class="cat-id" style="color:#9BB5FF;">CAT.01</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(155,181,255,0.4);">·</span>
+        <span class="cat-name">AI 빅뉴스</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">Anthropic Mythos, 2차 유출… IPO는 10월 목표</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#9BB5FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #9BB5FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">Anthropic의 최강 모델 Mythos가 사이버보안 우려로 제한 배포 중이지만 비인가 채널로 유출된 것으로 확인됐습니다. Anthropic은 밸류에이션 3,500억~8,000억 달러 사이에서 2026년 10월 IPO를 검토 중입니다. 직원들은 최근 공개 매각 기회에도 주식을 거의 팔지 않아 내부의 높은 기대감이 드러났습니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(155,181,255,0.4);">
+      <div class="footer-source"><span class="src-name">BLOOMBERG / CNBC</span><span class="src-url">cnbc.com</span></div>
+      <div class="read-btn" style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#9BB5FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 05 이미지/영상 AI #1 -->
+  <div class="card" id="card-5">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div>
+    <div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">05 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+        <span class="cat-id" style="color:#C8B0FF;">CAT.02</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">Kling 3.0, 세계 최초 15초+4K+오디오 단일 모델 구현</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#C8B0FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #C8B0FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">Kling 3.0이 업계 최초로 15초 길이, 4K 해상도, 네이티브 오디오를 단일 모델 안에서 구현했습니다. Seedance 2.0과 함께 영상 AI 시장을 클립 생성에서 통합 오디오-영상 프로덕션으로 전환시키고 있습니다. Q1 2026 추천 파이프라인은 Nano Banana 2로 이미지 생성 → Lyria 3로 음악 → Kling 3.0으로 최종 영상 완성입니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source"><span class="src-name">AI MEDIA TOOLS</span><span class="src-url">github.com/jayeshmepani</span></div>
+      <div class="read-btn" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#C8B0FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 06 이미지/영상 AI #2 -->
+  <div class="card" id="card-6">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div>
+    <div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">06 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+        <span class="cat-id" style="color:#C8B0FF;">CAT.02</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">NVIDIA·ComfyUI App View, RTX GPU서 영상 생성 2.5배↑</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#C8B0FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #C8B0FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">GDC 2026에서 공개된 ComfyUI App View로 노드 없이 프롬프트만으로 영상 생성이 가능해졌습니다. RTX 50 시리즈에서 NVFP4 포맷 적용 시 성능 2.5배 향상, VRAM 60% 절감됩니다. FLUX.2 Klein과 LTX-2.3 NVFP4 버전이 출시되었으며, 4K 실시간 업스케일링 노드도 추가됐습니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source"><span class="src-name">NVIDIA BLOG</span><span class="src-url">blogs.nvidia.com</span></div>
+      <div class="read-btn" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#C8B0FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 07 이미지/영상 AI #3 -->
+  <div class="card" id="card-7">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div>
+    <div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">07 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+        <span class="cat-id" style="color:#C8B0FF;">CAT.02</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">Flux 2 + Midjourney V7, 2026 이미지 생성 양강 구도 확립</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#C8B0FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #C8B0FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">Midjourney V7이 예술적 미감에서 독보적 우위를 유지하는 가운데, Flux 2는 포토리얼리즘과 텍스트 렌더링 정확도에서 강점을 보입니다. 추천 워크플로우는 Flux 2 또는 Midjourney로 이미지 생성 후 Kling 3.0이나 Veo 3로 영상 변환하는 이미지-투-비디오 파이프라인입니다. Ideogram V3는 텍스트 포함 이미지 분야에서 독보적입니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source"><span class="src-name">AWESOME AGENTS</span><span class="src-url">awesomeagents.ai</span></div>
+      <div class="read-btn" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#C8B0FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 08 이미지/영상 AI #4 -->
+  <div class="card" id="card-8">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div>
+    <div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg class="logo-svg" width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">08 / 08</div>
+    <div style="position:absolute; top:76px; left:32px;">
+      <div class="cat-chip" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+        <span class="cat-id" style="color:#C8B0FF;">CAT.02</span>
+        <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+    <div style="position:absolute; top:126px; left:32px; right:32px;">
+      <div style="font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.25; font-family:'Noto Serif KR',serif;">Wan 2.6 오픈소스, 6GB VRAM으로 로컬 영상 생성 가능</div>
+    </div>
+    <div style="position:absolute; top:248px; left:32px; display:flex; align-items:center; gap:10px;">
+      <div style="width:32px; height:1.5px; background:#C8B0FF; opacity:0.6;"></div>
+      <div style="width:6px; height:6px; border:1.5px solid #C8B0FF; transform:rotate(45deg); opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute; top:272px; left:32px; right:32px;">
+      <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">Wan 2.6이 오픈 웨이트로 출시되며 6~8GB VRAM의 중급 GPU에서도 480p 영상 생성이 가능해졌습니다. GGUF 양자화로 로컬 실행이 가능하며, ComfyUI와 통합되어 Kling·Runway의 오픈소스 대안으로 자리잡고 있습니다. ComfyUI Web에서는 브라우저만으로 Wan 2.2 기반 텍스트→영상 생성을 무료로 제공합니다.</p>
+    </div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source"><span class="src-name">COMFYUI WEB</span><span class="src-url">comfyuiweb.com</span></div>
+      <div class="read-btn" style="border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);"><span>원문 보기</span><span style="font-size:13px; color:#C8B0FF;">↗</span></div>
+    </div>
+  </div>
+
+  <!-- 네비게이션 -->
+  <div class="nav">
+    <button id="prev">←</button>
+    <div class="dots" id="dots"></div>
+    <button id="next">→</button>
+  </div>
+  <div class="nav-info" id="nav-info">1 / 8</div>
+</div>
+
+<script>
+  const cards = document.querySelectorAll('.card');
+  const dotsContainer = document.getElementById('dots');
+  const navInfo = document.getElementById('nav-info');
+  let current = 0;
+  const total = cards.length;
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+  function goTo(idx) {
+    cards[current].classList.remove('active');
+    const allDots = dotsContainer.querySelectorAll('.dot');
+    allDots[current].classList.remove('active', 'prev');
+    current = (idx + total) % total;
+    cards[current].classList.add('active');
+    allDots.forEach((dot, i) => {
+      dot.classList.remove('active', 'prev');
+      if (i === current) dot.classList.add('active');
+      else if (i < current) dot.classList.add('prev');
+    });
+    navInfo.textContent = (current + 1) + ' / ' + total;
+  }
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+</script>
+</body>
+</html>
