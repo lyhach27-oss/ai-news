@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISUAL LAB AI 뉴스 브리핑 | 2026.05.07</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0A0B14; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Noto Sans KR', sans-serif; padding: 20px; }
+  .viewer { position: relative; width: 420px; }
+  .card { display: none; width: 420px; height: 560px; position: relative; overflow: hidden; background: radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%), radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%), #0A0B14; }
+  .card.active { display: block; }
+  .grid-bg { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M 32 0 L 0 0 0 32' fill='none' stroke='%23EDEAE0' stroke-width='0.5'/%3E%3C/svg%3E"); opacity: 0.06; pointer-events: none; }
+  .glow-top { position: absolute; top: 0; left: 0; right: 0; height: 1px; pointer-events: none; }
+  .corner { position: absolute; width: 14px; height: 14px; opacity: 0.7; }
+  .corner.tl { top: 18px; left: 18px; border-top: 1.5px solid; border-left: 1.5px solid; }
+  .corner.tr { top: 18px; right: 18px; border-top: 1.5px solid; border-right: 1.5px solid; }
+  .corner.bl { bottom: 18px; left: 18px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+  .corner.br { bottom: 18px; right: 18px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+  .wordmark { display: flex; align-items: center; gap: 8px; position: absolute; top: 36px; left: 32px; }
+  .wordmark span { font-size: 12px; font-weight: 900; letter-spacing: 0.22em; font-family: 'JetBrains Mono', monospace; color: #EDEAE0; }
+  .page-num { position: absolute; top: 36px; right: 32px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8A8DA8; }
+  .footer { position: absolute; bottom: 24px; left: 32px; right: 32px; padding-top: 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .cat-chip { display: inline-flex; align-items: center; gap: 10px; padding: 6px 12px; }
+  .read-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; white-space: nowrap; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+  .nav button { background: rgba(155,181,255,0.1); border: 1px solid rgba(155,181,255,0.3); color: #9BB5FF; width: 32px; height: 32px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+  .dots { display: flex; align-items: center; gap: 6px; }
+  .dot { height: 6px; border-radius: 3px; background: rgba(155,181,255,0.25); transition: all 0.3s; cursor: pointer; }
+  .dot.active { background: #9BB5FF; width: 20px; }
+  .dot:not(.active) { width: 6px; }
+  .dot.prev { background: rgba(155,181,255,0.5); }
+  .nav-info { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #8A8DA8; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="viewer">
+
+  <!-- 01 표지 -->
+  <div class="card active" id="card-1">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#9BB5FF 40%,#9BB5FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div>
+    <div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div style="position:absolute;top:32px;right:32px;display:flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><div style="width:6px;height:6px;border-radius:50%;background:#9BB5FF;"></div><span style="font-size:10px;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#9BB5FF;">DAILY</span></div>
+    <div style="position:absolute;top:100px;left:32px;right:32px;"><div style="font-size:52px;font-weight:900;color:#EDEAE0;line-height:1.05;font-family:'Noto Serif KR',serif;letter-spacing:-0.02em;">TODAY'S<br>AI<br>briefing.</div><div style="margin-top:20px;width:120px;height:1px;background:linear-gradient(to right,#9BB5FF,transparent);"></div></div>
+    <div style="position:absolute;top:308px;left:32px;right:32px;height:1px;background:rgba(155,181,255,0.25);"></div>
+    <div style="position:absolute;top:322px;left:32px;right:32px;">
+      <div style="font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:0.4em;color:#8A8DA8;margin-bottom:14px;">INDEX</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(155,181,255,0.15);"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#9BB5FF;letter-spacing:0.2em;">CAT.01</span><span style="font-size:12px;color:#EDEAE0;font-weight:500;">AI 빅뉴스</span></div><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#9BB5FF;">3건</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;"><div style="display:flex;align-items:center;gap:12px;"><span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#C8B0FF;letter-spacing:0.2em;">CAT.02</span><span style="font-size:12px;color:#EDEAE0;font-weight:500;">이미지 / 영상 AI</span></div><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#C8B0FF;">4건</span></div>
+    </div>
+    <div style="position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid rgba(155,181,255,0.25);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;letter-spacing:0.1em;">2026.05.07 THU</span><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">01 / 08</span></div>
+  </div>
+
+  <!-- 02 빅뉴스 #1 -->
+  <div class="card" id="card-2">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#9BB5FF 40%,#9BB5FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div><div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">02 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#9BB5FF;">CAT.01</span><span style="font-size:9px;color:rgba(155,181,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">AI 빅뉴스</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">미 상무부 CAISI, Google·MS·xAI와 AI 사전 배포 평가 협약 체결</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#9BB5FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #9BB5FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">미 상무부 AI표준혁신센터(CAISI)가 Google DeepMind, Microsoft, xAI와 모델 공개 전 사전 평가 협약을 체결했습니다. Anthropic의 Claude Mythos Preview가 촉발한 사이버보안 파장을 계기로 기관 역할이 대폭 확대됐으며, 40건 이상의 모델 평가를 완료했습니다. OpenAI·Anthropic의 기존 협약도 트럼프 AI 행동 계획에 맞게 재협상됐습니다. 미국 AI 거버넌스의 본격적인 제도화를 의미합니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(155,181,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">CNN / CNBC</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">cnn.com</span></div><div class="read-btn" style="border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#9BB5FF;">↗</span></div></div>
+  </div>
+
+  <!-- 03 빅뉴스 #2 -->
+  <div class="card" id="card-3">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#9BB5FF 40%,#9BB5FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div><div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">03 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#9BB5FF;">CAT.01</span><span style="font-size:9px;color:rgba(155,181,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">AI 빅뉴스</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">OpenAI 재판 — Brockman, "머스크가 Tesla 위한 비밀 AI 작업 진행했다" 폭로</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#9BB5FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #9BB5FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">Greg Brockman이 법정 증언에서 머스크의 "비영리 약탈" 주장을 정면 반박했습니다. "영리 전환은 조직 생존을 위한 불가피한 결정이었다"고 밝혔으며, 머스크가 Tesla를 위한 비밀 AI 작업을 진행했다는 사실도 공개했습니다. 머스크는 2018년 자발적으로 이사회를 떠난 것으로 재확인됐습니다. 이번 재판은 AI 기업 영리 전환과 창업자 의무에 관한 역사적 법적 전례를 남길 것으로 주목됩니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(155,181,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">CNBC / NPR</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">cnbc.com</span></div><div class="read-btn" style="border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#9BB5FF;">↗</span></div></div>
+  </div>
+
+  <!-- 04 빅뉴스 #3 -->
+  <div class="card" id="card-4">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#9BB5FF 40%,#9BB5FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#9BB5FF;"></div><div class="corner tr" style="border-color:#9BB5FF;"></div><div class="corner bl" style="border-color:#9BB5FF;"></div><div class="corner br" style="border-color:#9BB5FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">04 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#9BB5FF;">CAT.01</span><span style="font-size:9px;color:rgba(155,181,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">AI 빅뉴스</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">Anthropic Mythos, 미 AI 정책 전환점 — MCP 9,700만 설치 돌파</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#9BB5FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #9BB5FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">Anthropic의 Claude Mythos Preview가 각국 정부·은행·보험사의 사이버보안 우려를 연쇄 촉발하며 미 AI 정책의 전환점이 됐습니다. 백악관 비서실장·재무장관·국가사이버국장이 직접 Mythos 관련 업무에 관여 중입니다. 한편 Anthropic의 MCP(모델 컨텍스트 프로토콜)가 9,700만 설치를 돌파하며 AI 에이전트 연결 표준으로 자리잡고, Linux Foundation의 오픈 거버넌스 체계로 이관됐습니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(155,181,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">BLOOMBERG</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">claimsjournal.com</span></div><div class="read-btn" style="border:1px solid #9BB5FF;background:rgba(155,181,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#9BB5FF;">↗</span></div></div>
+  </div>
+
+  <!-- 05 이미지/영상 #1 -->
+  <div class="card" id="card-5">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#C8B0FF 40%,#C8B0FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">05 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#C8B0FF;">CAT.02</span><span style="font-size:9px;color:rgba(200,176,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">이미지 / 영상 AI</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">FLUX.1 Kontext Dev 오픈웨이트 공개 — 캐릭터 일관성 유지 인컨텍스트 편집</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#C8B0FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #C8B0FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">Black Forest Labs가 FLUX.1 Kontext Dev를 오픈웨이트(비상업 라이선스)로 공개했습니다. 12B 파라미터 모델로 텍스트+이미지를 동시에 입력해 인컨텍스트 편집이 가능합니다. GPT-4o 이미지 대비 8배 빠른 속도로 캐릭터 일관성을 유지하며 정밀 편집이 가능합니다. ComfyUI 즉시 지원, Azure AI Foundry에서도 Pro 버전이 엔터프라이즈용으로 출시됐습니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">BLACK FOREST LABS</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">bfl.ai</span></div><div class="read-btn" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#C8B0FF;">↗</span></div></div>
+  </div>
+
+  <!-- 06 이미지/영상 #2 -->
+  <div class="card" id="card-6">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#C8B0FF 40%,#C8B0FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">06 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#C8B0FF;">CAT.02</span><span style="font-size:9px;color:rgba(200,176,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">이미지 / 영상 AI</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">OmniGen2 오픈소스 — 자연어로 객체 삭제·교체·스타일 변환 한 번에</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#C8B0FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #C8B0FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">VectorSpaceLab의 OmniGen2가 오픈소스로 공개됐습니다. 자연어 지시만으로 객체 제거·교체, 스타일 변환, 배경 처리를 정밀하게 수행합니다. 같은 주 NVIDIA 연구팀의 UniRelight(단일 이미지·영상 리라이팅), OmniConsistency(GPT-4o 수준 스타일 일관성, 데이터 2,600쌍)도 함께 공개됐습니다. ComfyUI 노드도 즉시 지원되어 오픈소스 이미지 편집 생태계가 빠르게 성장하고 있습니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">COMFYUI WIKI</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">comfyui-wiki.com</span></div><div class="read-btn" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#C8B0FF;">↗</span></div></div>
+  </div>
+
+  <!-- 07 이미지/영상 #3 -->
+  <div class="card" id="card-7">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#C8B0FF 40%,#C8B0FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">07 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#C8B0FF;">CAT.02</span><span style="font-size:9px;color:rgba(200,176,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">이미지 / 영상 AI</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">Runway Aleph — 영상 속 특정 요소만 골라 편집하는 인컨텍스트 에디터 공개</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#C8B0FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #C8B0FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">Runway가 Aleph 인컨텍스트 영상 편집 모델을 공개했습니다. 생성된 영상 안에서 특정 객체·요소만 선택적으로 수정하는 "영상의 포토샵 레이어"가 실현됐습니다. Adobe Firefly 통합으로 CC 구독자도 별도 비용 없이 사용 가능합니다. 이미지 생성 종합 랭킹은 Nano Banana 2(1위)·Midjourney V7(예술 1위)·Flux 2(포토리얼리즘 1위)·Ideogram V3(텍스트 1위) 구도를 유지하고 있습니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">AI MEDIA TOOLS</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">github.com/jayeshmepani</span></div><div class="read-btn" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#C8B0FF;">↗</span></div></div>
+  </div>
+
+  <!-- 08 이미지/영상 #4 -->
+  <div class="card" id="card-8">
+    <div class="grid-bg"></div>
+    <div class="glow-top" style="background:linear-gradient(to right,transparent,#C8B0FF 40%,#C8B0FF 60%,transparent);"></div>
+    <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+    <div class="wordmark"><svg width="20" height="20" viewBox="0 0 28 28"><path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg><span>VISUAL LAB</span></div>
+    <div class="page-num">08 / 08</div>
+    <div style="position:absolute;top:76px;left:32px;"><div class="cat-chip" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:#C8B0FF;">CAT.02</span><span style="font-size:9px;color:rgba(200,176,255,0.4);">·</span><span style="font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">이미지 / 영상 AI</span></div></div>
+    <div style="position:absolute;top:126px;left:32px;right:32px;"><div style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.25;font-family:'Noto Serif KR',serif;">Google I/O 2026 D-12 — Gemini 4.0·Omni 영상·Android XR 총출동 예고</div></div>
+    <div style="position:absolute;top:240px;left:32px;display:flex;align-items:center;gap:10px;"><div style="width:32px;height:1.5px;background:#C8B0FF;opacity:0.6;"></div><div style="width:6px;height:6px;border:1.5px solid #C8B0FF;transform:rotate(45deg);opacity:0.8;"></div></div>
+    <div style="position:absolute;top:264px;left:32px;right:32px;"><p style="font-size:13px;color:#B8BACE;line-height:1.78;font-family:'Noto Sans KR',sans-serif;">5월 19~20일 Google I/O 2026까지 12일 남았습니다. Gemini 4.0, "Powered by Omni" 통합 멀티모달 영상 모델, Android XR 스마트글래스(디스플레이 없는 버전 확정), Aluminum OS(Android+ChromeOS 통합)가 예고됩니다. Gemini 3.1 Flash-Lite는 $0.25/1M토큰으로 이미 출시돼 스타트업 공략 중입니다. I/O 발표가 영상 AI 판도를 다시 바꿀 수 있어 주목됩니다.</p></div>
+    <div class="footer" style="border-top:1px solid rgba(200,176,255,0.4);"><div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">MSN / WAVESPEED</span><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;">wavespeed.ai</span></div><div class="read-btn" style="border:1px solid #C8B0FF;background:rgba(200,176,255,0.12);"><span style="font-size:11px;color:#EDEAE0;">원문 보기</span><span style="font-size:13px;color:#C8B0FF;">↗</span></div></div>
+  </div>
+
+  <div class="nav"><button id="prev">←</button><div class="dots" id="dots"></div><button id="next">→</button></div>
+  <div class="nav-info" id="nav-info">1 / 8</div>
+</div>
+<script>
+  const cards = document.querySelectorAll('.card');
+  const dotsContainer = document.getElementById('dots');
+  const navInfo = document.getElementById('nav-info');
+  let current = 0;
+  const total = cards.length;
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+  function goTo(idx) {
+    cards[current].classList.remove('active');
+    const allDots = dotsContainer.querySelectorAll('.dot');
+    allDots[current].classList.remove('active', 'prev');
+    current = (idx + total) % total;
+    cards[current].classList.add('active');
+    allDots.forEach((dot, i) => { dot.classList.remove('active', 'prev'); if (i === current) dot.classList.add('active'); else if (i < current) dot.classList.add('prev'); });
+    navInfo.textContent = (current + 1) + ' / ' + total;
+  }
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') goTo(current - 1); if (e.key === 'ArrowRight') goTo(current + 1); });
+</script>
+</body>
+</html>
