@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISUAL LAB AI 뉴스 브리핑 | 2026.05.17</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0A0B14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 20px;
+    }
+    .viewer {
+      position: relative;
+      width: 420px;
+    }
+    .card-wrap {
+      position: relative;
+      width: 420px;
+      height: 560px;
+      overflow: hidden;
+    }
+    .card {
+      position: absolute;
+      top: 0; left: 0;
+      width: 420px;
+      height: 560px;
+      background: radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%),
+                  radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%),
+                  linear-gradient(180deg, #0A0B14 0%, #0A0B14 100%);
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .card.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    /* Grid background */
+    .grid-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+    /* Corner decorations */
+    .corner {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
+    }
+    .corner.tl { top: 18px; left: 18px; border-top: 1.5px solid var(--accent); border-left: 1.5px solid var(--accent); }
+    .corner.tr { top: 18px; right: 18px; border-top: 1.5px solid var(--accent); border-right: 1.5px solid var(--accent); }
+    .corner.bl { bottom: 18px; left: 18px; border-bottom: 1.5px solid var(--accent); border-left: 1.5px solid var(--accent); }
+    .corner.br { bottom: 18px; right: 18px; border-bottom: 1.5px solid var(--accent); border-right: 1.5px solid var(--accent); }
+    /* Glow line top */
+    .glow-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      opacity: 0.7;
+    }
+    /* Wordmark */
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .wordmark span {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+    }
+    /* Nav */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .nav button {
+      background: rgba(155,181,255,0.08);
+      border: 1px solid rgba(155,181,255,0.3);
+      color: #9BB5FF;
+      width: 36px;
+      height: 36px;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav button:hover { background: rgba(155,181,255,0.18); }
+    .dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .dot {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(155,181,255,0.25);
+      transition: all 0.3s ease;
+      width: 8px;
+    }
+    .dot.active {
+      background: #9BB5FF;
+      width: 20px;
+    }
+    .dot.prev {
+      background: rgba(155,181,255,0.5);
+    }
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #8A8DA8;
+      margin-top: 8px;
+      text-align: center;
+      letter-spacing: 0.15em;
+    }
+  </style>
+</head>
+<body>
+<div class="viewer">
+  <div class="card-wrap">
+
+    <!-- CARD 01: 표지 -->
+    <div class="card active" style="--accent: #9BB5FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid1" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid1)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+
+      <!-- Header -->
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span>VISUAL LAB</span>
+        </div>
+        <div style="border: 1px solid #9BB5FF; background: rgba(155,181,255,0.12); padding: 5px 12px; display:flex; gap:8px; align-items:center;">
+          <div style="width:6px; height:6px; border-radius:50%; background:#9BB5FF;"></div>
+          <span style="font-size:10px; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">DAILY</span>
+        </div>
+      </div>
+
+      <!-- Title block -->
+      <div style="position:absolute; top:110px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:52px; font-weight:900; color:#EDEAE0; line-height:1.05; letter-spacing:-0.01em;">
+          TODAY'S<br>
+          <span style="color:#9BB5FF;">AI</span><br>
+          briefing.
+        </div>
+        <!-- Glow divider -->
+        <div style="width:120px; height:1px; background: linear-gradient(to right, #9BB5FF, transparent); margin-top:20px; opacity:0.8;"></div>
+      </div>
+
+      <!-- Divider line -->
+      <div style="position:absolute; top:340px; left:32px; right:32px; height:1px; background: rgba(155,181,255,0.3);"></div>
+
+      <!-- Index -->
+      <div style="position:absolute; top:360px; left:32px; right:32px;">
+        <div style="font-size:9px; letter-spacing:0.4em; font-family:'JetBrains Mono',monospace; color:#8A8DA8; margin-bottom:16px;">INDEX</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:9px; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">CAT.01</span>
+            <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(155,181,255,0.4);">·</span>
+            <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">AI 빅뉴스</span>
+          </div>
+          <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">3건</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:9px; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#C8B0FF;">CAT.02</span>
+            <span style="font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(200,176,255,0.4);">·</span>
+            <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">이미지 / 영상 AI</span>
+          </div>
+          <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">4건</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(155,181,255,0.4); display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">2026.05.17 SUN</span>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">01 / 08</span>
+      </div>
+    </div>
+
+    <!-- CARD 02: AI 빅뉴스 #1 — Meta Muse Spark -->
+    <div class="card" style="--accent: #9BB5FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid2" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid2)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+
+      <!-- Header -->
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span>VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">02 / 08</span>
+      </div>
+
+      <!-- CAT chip -->
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">CAT.01</span>
+          <span style="font-size:9px; color:rgba(155,181,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">AI 빅뉴스</span>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          Meta Muse Spark 공개<br>슈퍼인텔리전스 랩의<br>첫 플래그십 모델
+        </div>
+      </div>
+
+      <!-- Accent mark -->
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#9BB5FF; opacity:0.9;"></div>
+
+      <!-- Brief -->
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          Meta가 최초의 플래그십 LLM Muse Spark를 공개했다. Chief AI Officer 알렉산더 왕이 이끄는 슈퍼인텔리전스 랩의 첫 번째 결과물로, 멀티모달 인식·추론·헬스케어·에이전틱 태스크에서 GPT-5.5급 벤치마크에 근접한 성능을 기존 Llama 4 대비 훨씬 낮은 컴퓨팅 비용으로 달성했다. Meta는 2026년 AI 자본지출로 1,150~1,350억 달러를 선언해 OpenAI·구글과의 AI 패권 경쟁이 본격화됐다.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(155,181,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">CNBC</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">cnbc.com/2026/meta-muse-spark</div>
+        </div>
+        <a href="https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#9BB5FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CARD 03: AI 빅뉴스 #2 — Google I/O D-2 -->
+    <div class="card" style="--accent: #9BB5FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid3" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid3)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span>VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">03 / 08</span>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">CAT.01</span>
+          <span style="font-size:9px; color:rgba(155,181,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">AI 빅뉴스</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          Google I/O D-2<br>Gemini 4·Veo 4 유출<br>내일 공개 초읽기
+        </div>
+      </div>
+
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#9BB5FF; opacity:0.9;"></div>
+
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          5월 19~20일 Google I/O 2026 개막이 이틀 앞으로 다가오며 구체적인 발표 내용이 속속 유출되고 있다. Gemini 4는 GPT-5.5급 성능에 네이티브 멀티모달 아키텍처를 채택해 이미지·텍스트·오디오·코드를 단일 프롬프트로 처리한다. Veo 4는 30초 영상과 오디오 통합 생성을 지원하며, Gemini Omni(영상 인챗 편집)·Android XR 글라스·Aluminium OS도 함께 공개될 예정으로 역대 최대 규모 AI 발표가 기대된다.
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(155,181,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">ANDROID AUTHORITY</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">androidauthority.com/google-io-2026</div>
+        </div>
+        <a href="https://www.androidauthority.com/what-to-expect-from-google-io-2026-3664979/" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#9BB5FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CARD 04: AI 빅뉴스 #3 — OpenAI 광고 플랫폼 -->
+    <div class="card" style="--accent: #9BB5FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid4" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid4)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span>VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">04 / 08</span>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">CAT.01</span>
+          <span style="font-size:9px; color:rgba(155,181,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">AI 빅뉴스</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          OpenAI, ChatGPT에<br>셀프서브 광고 플랫폼<br>AI 수익화 대전환
+        </div>
+      </div>
+
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#9BB5FF; opacity:0.9;"></div>
+
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          OpenAI가 ChatGPT에 셀프서브 광고 플랫폼을 공식 출시하며 AI 수익화 모델의 역사적 전환을 알렸다. 연간 매출 250억 달러를 돌파한 OpenAI가 구독 외 광고 수익원을 추가하는 대담한 결정으로, 아직 광고 없는 Claude·Gemini와 차별화된다. 같은 날 퍼스널 파이낸스 에이전트 스타트업 Hiro를 인수(2026년 7번째 M&A)하며 ChatGPT 에이전트 역량도 강화했다. AI 챗봇 광고 수익화의 새 시대가 열렸다.
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(155,181,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">OPENAI NEWS</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">openai.com/news</div>
+        </div>
+        <a href="https://openai.com/news/" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #9BB5FF; background:rgba(155,181,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#9BB5FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CARD 05: 이미지/영상 AI #1 — Imagen 4 -->
+    <div class="card" style="--accent: #C8B0FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid5" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid5)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span style="color:#C8B0FF;">VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">05 / 08</span>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#C8B0FF;">CAT.02</span>
+          <span style="font-size:9px; color:rgba(200,176,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">이미지/영상 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          Imagen 4, Veo 4와<br>크리에이티브 스위트<br>통합 완성
+        </div>
+      </div>
+
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.9;"></div>
+
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          Google Imagen 4가 Veo 4와 연동하는 통합 크리에이티브 스위트를 완성했다. 이미지에서 영상으로의 자연스러운 전환이 가능해졌으며, 텍스트 렌더링·포토리얼리즘·스타일 일관성 부문에서 업계 최고 수준을 기록 중이다. Google AI Studio API를 통해 이미지-영상 통합 워크플로우가 개발자에게 제공되며, Gemini Ultra 구독자는 인챗 편집 기능도 사용할 수 있다. Google I/O 2026에서 추가 업데이트가 예고되어 기대가 높아지고 있다.
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(200,176,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">ARTLIST BLOG</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">artlist.io/blog/veo-4-coming-soon</div>
+        </div>
+        <a href="https://artlist.io/blog/veo-4-coming-soon/" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#C8B0FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CARD 06: 이미지/영상 AI #2 — Kling 3.0 API GA -->
+    <div class="card" style="--accent: #C8B0FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid6" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid6)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span style="color:#C8B0FF;">VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">06 / 08</span>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#C8B0FF;">CAT.02</span>
+          <span style="font-size:9px; color:rgba(200,176,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">이미지/영상 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          Kling 3.0 API<br>엔터프라이즈 GA<br>모션 품질 1위 B2B 공략
+        </div>
+      </div>
+
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.9;"></div>
+
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          Kuaishou Kling 3.0 API가 엔터프라이즈 일반 접근(GA)을 달성하며 글로벌 B2B 공략을 본격화했다. 멀티샷 시퀀스·5개국어 네이티브 오디오·최대 2분 길이 영상 생성이 API로 직접 제공되며, 모션 품질 부문에서 업계 최고 평가를 받고 있다. Seedance 2.0·Veo 4와 함께 영상 AI 3강 구도를 형성하며, 스튜디오·광고·마케팅 기업 대상 엔터프라이즈 티어 출시로 대형 콘텐츠 제작사들의 도입이 가속화되고 있다.
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(200,176,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">VIDGURU</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">vidguru.ai/blog/kling-3</div>
+        </div>
+        <a href="https://www.vidguru.ai/blog/kling-3-vs-grok-imagine-video-comparison.html" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#C8B0FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CARD 07: 이미지/영상 AI #3 — WAN 2.1 리더보드 1위 -->
+    <div class="card" style="--accent: #C8B0FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid7" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid7)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span style="color:#C8B0FF;">VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">07 / 08</span>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#C8B0FF;">CAT.02</span>
+          <span style="font-size:9px; color:rgba(200,176,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">이미지/영상 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          WAN 2.1 14B<br>영상 AI 리더보드<br>1577점 압도적 1위
+        </div>
+      </div>
+
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.9;"></div>
+
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          WAN(Wan Video) 2.1 14B가 텍스트-영상 AI 아레나 리더보드에서 1,577점을 기록하며 압도적 1위를 달성했다. Grok Imagine Video(724점)·Veo 3.1(618점)을 두 배 이상 점수 차로 제치고 오픈소스 영상 AI 왕좌를 확고히 했다. 무료 오픈웨이트 라이선스로 ComfyUI 로컬 구동이 가능하며, Kling·Runway 대비 제한 없는 생성이 최대 강점이다. 글로벌 커뮤니티에서 가장 빠르게 성장하는 오픈소스 영상 AI 모델로 자리매김했다.
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(200,176,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">LLM STATS</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">llm-stats.com/leaderboards/video</div>
+        </div>
+        <a href="https://llm-stats.com/leaderboards/best-ai-for-video-generation" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#C8B0FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CARD 08: 이미지/영상 AI #4 — ChatGPT Images 2.0 -->
+    <div class="card" style="--accent: #C8B0FF;">
+      <svg class="grid-bg" width="420" height="560"><defs><pattern id="grid8" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="420" height="560" fill="url(#grid8)"/></svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color:#C8B0FF;"></div><div class="corner tr" style="border-color:#C8B0FF;"></div><div class="corner bl" style="border-color:#C8B0FF;"></div><div class="corner br" style="border-color:#C8B0FF;"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28"><path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/><path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>
+          <span style="color:#C8B0FF;">VISUAL LAB</span>
+        </div>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#8A8DA8; letter-spacing:0.05em;">08 / 08</span>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div style="display:inline-flex; align-items:center; gap:10px; padding:6px 12px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12);">
+          <span style="font-size:10px; letter-spacing:0.35em; font-family:'JetBrains Mono',monospace; color:#C8B0FF;">CAT.02</span>
+          <span style="font-size:9px; color:rgba(200,176,255,0.4); font-family:'JetBrains Mono',monospace;">·</span>
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.08em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">이미지/영상 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:28px; font-weight:700; color:#EDEAE0; line-height:1.35; letter-spacing:-0.01em;">
+          ChatGPT Images 2.0<br>전 플랜 무료 확대<br>이미지 AI 민주화
+        </div>
+      </div>
+
+      <div style="position:absolute; top:290px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.9;"></div>
+
+      <div style="position:absolute; top:310px; left:32px; right:32px;">
+        <p style="font-size:13.5px; color:#B8BACE; line-height:1.75; font-family:'Noto Sans KR',sans-serif;">
+          OpenAI ChatGPT Images 2.0이 Free 플랜을 포함한 전 플랜으로 확대됐다. 기존 유료 한정이던 이미지 생성 기능이 무료화되며 진입 장벽이 사라졌고, 텍스트 렌더링 성능도 대폭 향상돼 포스터·인포그래픽·로고 제작에 최적화됐다. 파일 라이브러리도 Free·Go 플랜으로 확대되어 생성 이미지 관리가 편리해졌다. Midjourney·Flux와의 이미지 AI 삼파전이 더욱 치열해질 전망이다.
+        </p>
+      </div>
+
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; padding-top:12px; border-top:1px solid rgba(200,176,255,0.4); display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">RELEASEBOT</div>
+          <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#8A8DA8;">releasebot.io/updates/openai</div>
+        </div>
+        <a href="https://releasebot.io/updates/openai/chatgpt" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #C8B0FF; background:rgba(200,176,255,0.12); white-space:nowrap;">
+          <span style="font-size:12px; font-weight:500; font-family:'JetBrains Mono',monospace; color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px; color:#C8B0FF;">↗</span>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- end card-wrap -->
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button id="prev">←</button>
+    <div class="dots" id="dots"></div>
+    <button id="next">→</button>
+  </div>
+  <div class="slide-counter" id="counter">1 / 8</div>
+</div>
+
+<script>
+  const cards = document.querySelectorAll('.card');
+  const dotsContainer = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  let current = 0;
+
+  // Build dots
+  cards.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function updateDots(idx) {
+    const dots = dotsContainer.querySelectorAll('.dot');
+    dots.forEach((d, i) => {
+      d.className = 'dot';
+      if (i === idx) d.className = 'dot active';
+      else if (i < idx) d.className = 'dot prev';
+    });
+  }
+
+  function goTo(idx) {
+    cards[current].classList.remove('active');
+    current = (idx + cards.length) % cards.length;
+    cards[current].classList.add('active');
+    updateDots(current);
+    counter.textContent = (current + 1) + ' / ' + cards.length;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+</script>
+</body>
+</html>
