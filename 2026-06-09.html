@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISUAL LAB AI 뉴스 브리핑 | 2026.06.09</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#07080f;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+#viewer{display:flex;flex-direction:column;align-items:center;gap:0;}
+#card-wrap{position:relative;width:420px;height:560px;}
+.card{
+  position:absolute;top:0;left:0;width:420px;height:560px;
+  overflow:hidden;display:none;
+  background:
+    radial-gradient(ellipse at 80% 0%,rgba(120,140,255,.18) 0%,transparent 55%),
+    radial-gradient(ellipse at 0% 100%,rgba(200,176,255,.08) 0%,transparent 50%),
+    #0A0B14;
+}
+.card.active{display:block;}
+/* nav */
+#nav{display:flex;align-items:center;gap:16px;margin-top:20px;}
+.nbtn{
+  background:none;border:1px solid rgba(155,181,255,.3);
+  color:#9BB5FF;width:36px;height:36px;cursor:pointer;
+  font-size:15px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;transition:all .2s;
+}
+.nbtn:hover{background:rgba(155,181,255,.1);}
+#dots{display:flex;gap:5px;align-items:center;}
+.dot{
+  height:3px;border-radius:2px;
+  background:rgba(155,181,255,.2);
+  transition:all .3s;width:8px;cursor:pointer;
+}
+.dot.active{width:20px;}
+.dot.past{background:rgba(155,181,255,.45);}
+</style>
+</head>
+<body>
+<div id="viewer">
+  <div id="card-wrap"></div>
+  <nav id="nav">
+    <button class="nbtn" id="prev">&#8592;</button>
+    <div id="dots"></div>
+    <button class="nbtn" id="next">&#8594;</button>
+  </nav>
+</div>
+<script>
+const BIG={accent:'#9BB5FF',accentSoft:'rgba(155,181,255,0.12)',accentLine:'rgba(155,181,255,0.4)',glowRgb:'155,181,255'};
+const IMG={accent:'#C8B0FF',accentSoft:'rgba(200,176,255,0.12)',accentLine:'rgba(200,176,255,0.4)',glowRgb:'200,176,255'};
+
+const CARDS=[
+  {type:'cover'},
+  {
+    type:'news',cat:'01',catLabel:'AI 빅뉴스',num:'02',col:BIG,
+    title:'ChatGPT 슈퍼앱 \'Aria\' 오늘 공개',
+    brief:'OpenAI가 코드명 \'Aria\'로 개발한 ChatGPT 슈퍼앱이 오늘 9억 주간 사용자 대상으로 정식 공개됐다. 단순 Q&A 도구에서 에이전트·코딩·이미지 생성·외부 서비스 통합 플랫폼으로 전면 재설계됐다. Canva·Booking.com을 MCP로 직접 구동하고 Stripe 결제까지 처리한다. 소비자 기능 우선 배포 후 60일 내 엔터프라이즈 기능 추가 예정. 9월 IPO를 앞두고 에이전틱 커머스 제패를 노린 핵심 성장 전략이다.',
+    sourceName:'TECHTIMES',
+    sourceUrl:'techtimes.com/318025',
+    link:'https://www.techtimes.com/articles/318025/20260608/openais-chatgpt-superapp-bid-own-agentic-commerce-apps-run-mcp-checkout-stripe.htm'
+  },
+  {
+    type:'news',cat:'01',catLabel:'AI 빅뉴스',num:'03',col:BIG,
+    title:'구글 Gemini 3.5 Flash 정식 출시',
+    brief:'구글이 오늘 Gemini 3.5 Flash를 정식 출시했다. 동급 모델 대비 4배 빠른 속도와 100만 토큰 컨텍스트를 갖추며, 입력 $1.50·출력 $9/백만 토큰으로 비용 경쟁력을 앞세운다. 프론티어급 지능이 필요한 대용량 배치 처리·실시간 에이전트·멀티모달 앱에 최적화됐다. Gemini 3.5 Pro보다 훨씬 저렴하면서도 프론티어급 성능을 제공, 기업 API 전환 수요를 가속할 전망이다.',
+    sourceName:'LLM-STATS.COM',
+    sourceUrl:'llm-stats.com/ai-news',
+    link:'https://llm-stats.com/ai-news'
+  },
+  {
+    type:'news',cat:'01',catLabel:'AI 빅뉴스',num:'04',col:BIG,
+    title:'백악관 AI 정책 수석 6월 말 퇴임',
+    brief:'트럼프 행정부 AI 정책의 핵심인 백악관 수석 AI 보좌관 스리람 크리쉬난이 6월 말 퇴임을 공식 발표했다. 퇴임 후 정부·민간을 잇는 독립 AI 정책 기관을 새로 설립한다는 계획이다. AI 행정명령 설계를 주도한 인물의 이탈로 미국 AI 규제·투자 방향에 불확실성이 커졌다는 평가다. 백악관은 후임자 인선에 착수한 것으로 알려졌다.',
+    sourceName:'WHITEHOUSE.GOV',
+    sourceUrl:'whitehouse.gov/ai-actions',
+    link:'https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/'
+  },
+  {
+    type:'news',cat:'02',catLabel:'이미지/영상 AI',num:'05',col:IMG,
+    title:'Gemini Omni Flash 영상 생성 공개',
+    brief:'구글이 텍스트·이미지·오디오 등 모든 입력에서 영상을 출력하는 Gemini Omni Flash를 공개했다. Gemini Omni 패밀리 최초 모델로, Gemini 앱·Google Flow·YouTube Shorts에서 즉시 사용 가능하다. 향후 이미지·텍스트 출력 모드도 추가 예정이며 개발자 API는 수주 내 공개된다. Any-to-Any 진정한 멀티모달 생성 모델의 등장으로 영상 AI 시장 판도가 요동칠 전망이다.',
+    sourceName:'GOOGLE BLOG',
+    sourceUrl:'blog.google/io-2026',
+    link:'https://blog.google/innovation-and-ai/sundar-pichai-io-2026/'
+  },
+  {
+    type:'news',cat:'02',catLabel:'이미지/영상 AI',num:'06',col:IMG,
+    title:'xAI Grok Imagine 1.5 I2V API 출시',
+    brief:'xAI가 이미지-투-영상 모델 Grok Imagine 1.5를 API 프리뷰로 공개했다. 정지 이미지와 자연어 프롬프트만으로 카메라 무브·대기 효과·물리 시뮬레이션을 포함한 720p 영상을 생성한다. 모든 생성에 오디오가 기본 포함되며 분당 60 요청을 지원한다. 브랜드 광고·크리에이티브 제작 특화로 Runway·Kling과의 프로 시장 경쟁에 본격 합류했다.',
+    sourceName:'DIGITAL APPLIED',
+    sourceUrl:'digitalapplied.com/grok',
+    link:'https://www.digitalapplied.com/blog/grok-imagine-1-5-image-to-video-brand-ad-production-2026'
+  },
+  {
+    type:'news',cat:'02',catLabel:'이미지/영상 AI',num:'07',col:IMG,
+    title:'iOS 27, 이미지 생성 타사 모델 개방',
+    brief:'WWDC 2026 개발자 세션에서 공개된 iOS 27이 Image Playground에 서드파티 이미지 모델 연동을 도입한다. Google Nano Banana 등 외부 모델을 직접 선택할 수 있고, Genmoji는 개인 사진·자주 입력한 문구를 분석해 맞춤 이모지를 자동 제안한다. Apple Intelligence 이미지 모델 자체도 대폭 향상이 예고됐다. iOS 27은 올 가을 정식 출시 예정이다.',
+    sourceName:'MACWORLD',
+    sourceUrl:'macworld.com/ios-27',
+    link:'https://www.macworld.com/article/2986799/ios-27-new-iphone-features-release-date-beta-compatiblity-apple-intelligence-siri.html'
+  },
+  {
+    type:'news',cat:'02',catLabel:'이미지/영상 AI',num:'08',col:IMG,
+    title:'구글 Pics, 객체별 AI 이미지 편집',
+    brief:'구글이 Nano Banana 모델 기반의 새 이미지 창작·편집 도구 Google Pics를 발표했다. 이미지 내 모든 요소를 개별 객체로 인식해 특정 부분만 수정·교체·생성하는 레이어드 오브젝트 방식이 특징이다. 창작 통제권을 극대화한 직관적 UX로 Adobe Firefly와의 정면 대결이 예상된다. 올 여름 Google AI Pro·Ultra 구독자 대상 Workspace 배포 예정이다.',
+    sourceName:'GOOGLE BLOG',
+    sourceUrl:'blog.google/google-pics',
+    link:'https://blog.google/innovation-and-ai/sundar-pichai-io-2026/'
+  }
+];
+
+// ── helpers ──────────────────────────────────────────────
+function gridSVG(id){
+  return `<svg style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:.06;pointer-events:none" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="${id}" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width=".5"/></pattern></defs><rect width="100%" height="100%" fill="url(#${id})"/></svg>`;
+}
+
+function glowLine(accent){
+  return `<div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,${accent} 40%,${accent} 60%,transparent);opacity:.7;"></div>`;
+}
+
+function corners(accent){
+  const s=`1.5px solid ${accent}`;
+  return [
+    `<div style="position:absolute;top:18px;left:18px;width:14px;height:14px;border-top:${s};border-left:${s};opacity:.7;"></div>`,
+    `<div style="position:absolute;top:18px;right:18px;width:14px;height:14px;border-top:${s};border-right:${s};opacity:.7;"></div>`,
+    `<div style="position:absolute;bottom:18px;left:18px;width:14px;height:14px;border-bottom:${s};border-left:${s};opacity:.7;"></div>`,
+    `<div style="position:absolute;bottom:18px;right:18px;width:14px;height:14px;border-bottom:${s};border-right:${s};opacity:.7;"></div>`
+  ].join('');
+}
+
+function logoMark(accent){
+  return `<div style="display:flex;align-items:center;gap:8px;">
+    <svg width="20" height="20" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="${accent}" stroke-width="1.5"/>
+      <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="${accent}"/>
+      <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+    </svg>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;letter-spacing:.22em;color:#EDEAE0;">VISUAL LAB</span>
+  </div>`;
+}
+
+// ── cover card ────────────────────────────────────────────
+function buildCover(){
+  const a=BIG.accent, al=BIG.accentLine, as_=BIG.accentSoft;
+  return `<div class="card active" id="card-0">
+    ${gridSVG('g0')}
+    ${glowLine(a)}
+    ${corners(a)}
+    <!-- header -->
+    <div style="position:absolute;top:32px;left:32px;right:32px;display:flex;align-items:center;justify-content:space-between;">
+      ${logoMark(a)}
+      <div style="border:1px solid ${a};background:${as_};padding:5px 12px;display:flex;gap:8px;align-items:center;">
+        <div style="width:6px;height:6px;border-radius:50%;background:${a};"></div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;color:${a};">DAILY</span>
+      </div>
+    </div>
+    <!-- main title -->
+    <div style="position:absolute;top:136px;left:36px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.45em;color:#8A8DA8;margin-bottom:6px;">TODAY'S</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:82px;font-weight:900;color:#EDEAE0;line-height:1;">AI</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:29px;font-weight:400;font-style:italic;color:#B8BACE;margin-bottom:22px;">briefing.</div>
+      <div style="width:120px;height:1px;background:linear-gradient(to right,${a},transparent);opacity:.85;"></div>
+    </div>
+    <!-- full divider -->
+    <div style="position:absolute;top:338px;left:32px;right:32px;height:1px;background:${al};"></div>
+    <!-- index -->
+    <div style="position:absolute;top:354px;left:32px;right:32px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.45em;color:#8A8DA8;margin-bottom:18px;">INDEX</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.25em;color:${a};">CAT.01</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${al};">·</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:#B8BACE;">AI 빅뉴스</span>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${a};">3건</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.25em;color:${IMG.accent};">CAT.02</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${IMG.accentLine};">·</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:#B8BACE;">이미지 / 영상 AI</span>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${IMG.accent};">4건</span>
+      </div>
+    </div>
+    <!-- footer -->
+    <div style="position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid ${al};display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A8DA8;letter-spacing:.12em;">2026.06.09 TUE</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${a};letter-spacing:.1em;">01 / 08</span>
+    </div>
+  </div>`;
+}
+
+// ── news card ─────────────────────────────────────────────
+function buildNews(d,idx){
+  const c=d.col, a=c.accent, al=c.accentLine, as_=c.accentSoft;
+  return `<div class="card" id="card-${idx}">
+    ${gridSVG('g'+idx)}
+    ${glowLine(a)}
+    ${corners(a)}
+    <!-- header -->
+    <div style="position:absolute;top:32px;left:32px;right:32px;display:flex;align-items:center;justify-content:space-between;">
+      ${logoMark(a)}
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A8DA8;letter-spacing:.1em;">${d.num} / 08</span>
+    </div>
+    <!-- CAT chip -->
+    <div style="position:absolute;top:78px;left:32px;display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid ${a};background:${as_};">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.35em;color:${a};">CAT.${d.cat}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:${al};">·</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.08em;color:#EDEAE0;">${d.catLabel}</span>
+    </div>
+    <!-- title -->
+    <div style="position:absolute;top:136px;left:32px;right:32px;">
+      <div style="font-family:'Noto Serif KR',serif;font-size:28px;font-weight:700;color:#EDEAE0;line-height:1.45;word-break:keep-all;">
+        ${d.title}
+      </div>
+    </div>
+    <!-- accent mark -->
+    <div style="position:absolute;top:300px;left:32px;width:32px;height:2px;background:${al};border-radius:1px;"></div>
+    <!-- brief -->
+    <div style="position:absolute;top:316px;left:32px;right:32px;">
+      <p style="font-family:'Noto Sans KR',sans-serif;font-size:13.5px;font-weight:400;color:#B8BACE;line-height:1.72;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden;">
+        ${d.brief}
+      </p>
+    </div>
+    <!-- footer -->
+    <div style="position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid ${al};display:flex;justify-content:space-between;align-items:flex-end;gap:12px;">
+      <div style="min-width:0;flex:1;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.28em;color:#EDEAE0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.sourceName}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8A8DA8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.sourceUrl}</div>
+      </div>
+      <a href="${d.link}" target="_blank" style="text-decoration:none;flex-shrink:0;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid ${a};background:${as_};white-space:nowrap;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#EDEAE0;">원문 보기</span>
+        <span style="font-size:13px;color:${a};">↗</span>
+      </a>
+    </div>
+  </div>`;
+}
+
+// ── build DOM ─────────────────────────────────────────────
+const wrap=document.getElementById('card-wrap');
+const dotsEl=document.getElementById('dots');
+let html='';
+CARDS.forEach((d,i)=>{
+  html+=d.type==='cover'?buildCover():buildNews(d,i);
+  const dot=document.createElement('div');
+  dot.className='dot'+(i===0?' active':'');
+  dot.dataset.i=i;
+  dotsEl.appendChild(dot);
+});
+wrap.innerHTML=html;
+
+// ── slider ────────────────────────────────────────────────
+const cards=document.querySelectorAll('.card');
+const dots=document.querySelectorAll('.dot');
+const btns=document.querySelectorAll('.nbtn');
+const N=cards.length;
+let cur=0;
+
+function accent(i){return i<4?BIG.accent:IMG.accent;}
+function accentBorder(i){return i<4?'rgba(155,181,255,0.3)':'rgba(200,176,255,0.3)';}
+
+function goTo(n){
+  cards[cur].classList.remove('active');
+  cur=(n+N)%N;
+  cards[cur].classList.add('active');
+  dots.forEach((d,i)=>{
+    d.classList.remove('active','past');
+    if(i===cur){d.classList.add('active');d.style.background=accent(i);}
+    else if(i<cur){d.style.background=`rgba(${i<4?'155,181,255':'200,176,255'},0.45)`;d.classList.add('past');}
+    else{d.style.background='rgba(155,181,255,0.2)';}
+  });
+  const ac=accent(cur);
+  btns.forEach(b=>{b.style.color=ac;b.style.borderColor=accentBorder(cur);});
+}
+
+document.getElementById('prev').onclick=()=>goTo(cur-1);
+document.getElementById('next').onclick=()=>goTo(cur+1);
+dots.forEach(d=>d.onclick=()=>goTo(+d.dataset.i));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')goTo(cur-1);
+  if(e.key==='ArrowRight')goTo(cur+1);
+});
+
+// init dot styles
+dots.forEach((d,i)=>{
+  if(i===0){d.style.background=accent(0);}
+  else{d.style.background='rgba(155,181,255,0.2)';}
+});
+</script>
+</body>
+</html>
