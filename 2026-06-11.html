@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISUAL LAB AI 뉴스 브리핑 | 2026.06.11</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0A0B14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 20px;
+    }
+    .viewer {
+      position: relative;
+      width: 420px;
+    }
+    .card {
+      display: none;
+      width: 420px;
+      height: 560px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #0A0B14 0%, #0A0B14 100%);
+    }
+    .card.active { display: block; }
+
+    /* Grid background */
+    .card-grid {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+
+    /* Top glow line */
+    .glow-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      opacity: 0.7;
+    }
+
+    /* Corner decorations */
+    .corner {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+    }
+    .corner.tl { top: 18px; left: 18px; border-top: 1.5px solid; border-left: 1.5px solid; }
+    .corner.tr { top: 18px; right: 18px; border-top: 1.5px solid; border-right: 1.5px solid; }
+    .corner.bl { bottom: 18px; left: 18px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+    .corner.br { bottom: 18px; right: 18px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+    /* Wordmark */
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .wordmark-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      color: #EDEAE0;
+    }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .nav button {
+      background: none;
+      border: 1px solid rgba(155,181,255,0.3);
+      color: #9BB5FF;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+    }
+    .nav button:hover { background: rgba(155,181,255,0.1); }
+    .dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      height: 4px;
+      border-radius: 2px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .dot.active { width: 20px; }
+    .dot.prev { width: 8px; opacity: 0.6; }
+    .dot.future { width: 6px; opacity: 0.25; }
+    .dot.next-prev { width: 6px; opacity: 0.4; }
+
+    /* Card counter */
+    .card-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #8A8DA8;
+    }
+
+    /* CAT chip */
+    .cat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      border: 1px solid;
+    }
+    .cat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+    }
+    .cat-dot {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+    }
+    .cat-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #EDEAE0;
+    }
+
+    /* Divider mark */
+    .divider-mark {
+      width: 32px;
+      height: 2px;
+      position: absolute;
+    }
+
+    /* Brief text */
+    .brief-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: #B8BACE;
+      letter-spacing: -0.01em;
+    }
+
+    /* Footer */
+    .card-footer {
+      position: absolute;
+      bottom: 24px;
+      left: 32px;
+      right: 32px;
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    .source-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+    }
+    .source-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #8A8DA8;
+      margin-top: 3px;
+    }
+    .read-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: default;
+    }
+    .read-btn-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: #EDEAE0;
+    }
+    .read-btn-arrow {
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewer">
+
+    <!-- ===================== CARD 01: 표지 ===================== -->
+    <div class="card active" id="card-1">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid0" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid0)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(155,181,255,0.7);"></div>
+
+      <!-- Header -->
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div style="border:1px solid #9BB5FF; background:rgba(155,181,255,0.12); padding:5px 12px; display:flex; gap:8px; align-items:center;">
+          <div style="width:6px; height:6px; border-radius:50%; background:#9BB5FF;"></div>
+          <span style="font-size:10px; letter-spacing:0.3em; font-family:'JetBrains Mono',monospace; color:#9BB5FF;">DAILY</span>
+        </div>
+      </div>
+
+      <!-- Title block -->
+      <div style="position:absolute; top:130px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:52px; font-weight:900; color:#EDEAE0; line-height:1.1; letter-spacing:-0.02em;">
+          TODAY'S
+        </div>
+        <div style="font-family:'Noto Serif KR',serif; font-size:52px; font-weight:900; color:#9BB5FF; line-height:1.1; letter-spacing:-0.02em;">
+          AI
+        </div>
+        <div style="font-family:'Noto Serif KR',serif; font-size:52px; font-weight:900; color:#EDEAE0; line-height:1.1; letter-spacing:-0.02em;">
+          briefing.
+        </div>
+        <!-- glow divider -->
+        <div style="margin-top:20px; width:120px; height:1px; background:linear-gradient(to right, #9BB5FF, transparent); opacity:0.8;"></div>
+        <!-- date -->
+        <div style="margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A8DA8; letter-spacing:0.2em;">
+          2026.06.11 · THU
+        </div>
+      </div>
+
+      <!-- Index section -->
+      <div style="position:absolute; top:360px; left:32px; right:32px;">
+        <div style="border-top:1px solid rgba(155,181,255,0.25); padding-top:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.4em; color:#8A8DA8; margin-bottom:14px;">INDEX</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#9BB5FF; letter-spacing:0.2em;">CAT.01</span>
+              <span style="font-family:'Noto Sans KR',sans-serif; font-size:13px; color:#EDEAE0;">AI 빅뉴스</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9BB5FF;">3건</span>
+          </div>
+          <div style="width:100%; height:1px; background:rgba(155,181,255,0.1); margin-bottom:10px;"></div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#C8B0FF; letter-spacing:0.2em;">CAT.02</span>
+              <span style="font-family:'Noto Sans KR',sans-serif; font-size:13px; color:#EDEAE0;">이미지 / 영상 AI</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#C8B0FF;">4건</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="position:absolute; bottom:24px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid rgba(155,181,255,0.2);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A8DA8; letter-spacing:0.1em;">2026.06.11</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A8DA8;">01 / 08</div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 02: AI 빅뉴스 #1 ===================== -->
+    <div class="card" id="card-2">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid1" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid1)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(155,181,255,0.7);"></div>
+
+      <!-- Header -->
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">02 / 08</div>
+      </div>
+
+      <!-- CAT chip -->
+      <div style="position:absolute; top:84px; left:32px; display:flex; align-items:center; gap:12px;">
+        <div class="cat-chip" style="border-color:rgba(155,181,255,0.4); background:rgba(155,181,255,0.12);">
+          <span class="cat-label" style="color:#9BB5FF;">CAT.01</span>
+          <span class="cat-dot" style="color:rgba(155,181,255,0.5);">·</span>
+          <span class="cat-name">AI 빅뉴스</span>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          SpaceX·xAI 사상<br>최대 IPO $1.75조<br>가격 확정
+        </div>
+      </div>
+
+      <!-- Divider mark -->
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#9BB5FF; opacity:0.8;"></div>
+
+      <!-- Brief -->
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          SpaceX가 6월 11일 $135/주·$1.75조 기업가치로 IPO 가격을 확정했다. 역사상 최대 IPO로, 나스닥 SPCX 티커 6월 12일 상장 예정. Anthropic $1.25B/월·Google $9.2억/월 Colossus 컴퓨팅 계약으로 연 $26B 매출 기반 확보. Morningstar는 xAI 궤도 데이터센터 기반 $1.3조 가치가 미검증이라며 적정가를 $7,800억으로 경고했다.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="card-footer" style="border-top:1px solid rgba(155,181,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#9BB5FF;">MORNINGSTAR</div>
+          <div class="source-url">billionaires.africa/spacex-ipo</div>
+        </div>
+        <div class="read-btn" style="border-color:#9BB5FF; background:rgba(155,181,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#9BB5FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 03: AI 빅뉴스 #2 ===================== -->
+    <div class="card" id="card-3">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid2" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid2)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(155,181,255,0.7);"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">03 / 08</div>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div class="cat-chip" style="border-color:rgba(155,181,255,0.4); background:rgba(155,181,255,0.12);">
+          <span class="cat-label" style="color:#9BB5FF;">CAT.01</span>
+          <span class="cat-dot" style="color:rgba(155,181,255,0.5);">·</span>
+          <span class="cat-name">AI 빅뉴스</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          OpenAI, Oracle 클라우드서<br>GPT·Codex 파트너십<br>공식 발표
+        </div>
+      </div>
+
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#9BB5FF; opacity:0.8;"></div>
+
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          OpenAI가 6월 11일 Oracle Cloud Infrastructure(OCI)와 공식 파트너십을 발표했다. Oracle 기업 고객이 기존 OCI 크레딧으로 GPT·Codex·Sora 전 제품을 별도 계약 없이 구매할 수 있다. AWS에 이어 Oracle로 멀티클라우드 배포를 확장하며 기업 AI 도입 마찰을 줄이는 전략. 수주 내 OCI에서 OpenAI 모델 접근이 가능해진다.
+        </p>
+      </div>
+
+      <div class="card-footer" style="border-top:1px solid rgba(155,181,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#9BB5FF;">OPENAI</div>
+          <div class="source-url">openai.com/openai-on-oracle-cloud</div>
+        </div>
+        <div class="read-btn" style="border-color:#9BB5FF; background:rgba(155,181,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#9BB5FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 04: AI 빅뉴스 #3 ===================== -->
+    <div class="card" id="card-4">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid3" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid3)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(155,181,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(155,181,255,0.7);"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">04 / 08</div>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div class="cat-chip" style="border-color:rgba(155,181,255,0.4); background:rgba(155,181,255,0.12);">
+          <span class="cat-label" style="color:#9BB5FF;">CAT.01</span>
+          <span class="cat-dot" style="color:rgba(155,181,255,0.5);">·</span>
+          <span class="cat-name">AI 빅뉴스</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          OpenAI S-1 SEC 제출·<br>ChatGPT 셀프서브<br>광고 매니저 공개
+        </div>
+      </div>
+
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#9BB5FF; opacity:0.8;"></div>
+
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          OpenAI가 6월 10일 SEC에 기밀 S-1을 제출하며 IPO 절차에 공식 돌입했다. Anthropic(6/4)에 이어 AI 3대 IPO 경쟁이 본격화된다. 동시에 ChatGPT에 셀프서브 광고 매니저를 탑재해 중소 광고주가 직접 캠페인을 집행할 수 있도록 개방했다. 광고 수익원 신설로 IPO 밸류에이션 제고 및 수익 다각화를 동시에 추진한다.
+        </p>
+      </div>
+
+      <div class="card-footer" style="border-top:1px solid rgba(155,181,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#9BB5FF;">OPENAI / SEC</div>
+          <div class="source-url">releasebot.io/updates/openai</div>
+        </div>
+        <div class="read-btn" style="border-color:#9BB5FF; background:rgba(155,181,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#9BB5FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 05: 이미지/영상 AI #1 ===================== -->
+    <div class="card" id="card-5">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid4" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid4)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(200,176,255,0.7);"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">05 / 08</div>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div class="cat-chip" style="border-color:rgba(200,176,255,0.4); background:rgba(200,176,255,0.12);">
+          <span class="cat-label" style="color:#C8B0FF;">CAT.02</span>
+          <span class="cat-dot" style="color:rgba(200,176,255,0.5);">·</span>
+          <span class="cat-name">이미지 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          Nano Banana Pro<br>(Gemini 3 Pro Image)<br>공식 출시
+        </div>
+      </div>
+
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.8;"></div>
+
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          Google DeepMind가 Gemini 3 Pro 기반 최신 이미지 생성·편집 모델 Nano Banana Pro를 GA 공개했다. 최대 14개 입력을 혼합해 단일 이미지에 통합하는 다중 참조 합성이 핵심 강점. 조명·색보정·포커스·카메라 프레이밍 세밀 제어 지원. 복잡한 씬 구성과 다수 캐릭터 일관성에서 경쟁 모델 대비 최강 성능을 기록했다.
+        </p>
+      </div>
+
+      <div class="card-footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#C8B0FF;">GOOGLE DEEPMIND</div>
+          <div class="source-url">blog.google/nano-banana-pro</div>
+        </div>
+        <div class="read-btn" style="border-color:#C8B0FF; background:rgba(200,176,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#C8B0FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 06: 이미지/영상 AI #2 ===================== -->
+    <div class="card" id="card-6">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid5" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid5)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(200,176,255,0.7);"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">06 / 08</div>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div class="cat-chip" style="border-color:rgba(200,176,255,0.4); background:rgba(200,176,255,0.12);">
+          <span class="cat-label" style="color:#C8B0FF;">CAT.02</span>
+          <span class="cat-dot" style="color:rgba(200,176,255,0.5);">·</span>
+          <span class="cat-name">영상 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          Veo 3.1 Lite Preview<br>— 50% 비용 절감<br>저가 영상 AI 출시
+        </div>
+      </div>
+
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.8;"></div>
+
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          Google이 Veo 3.1 Lite Preview(veo-3.1-lite-generate-preview)를 Gemini API로 공개했다. 기존 Veo 3.1 대비 50% 이상 비용 절감이 핵심으로, 고빈도 배치 처리와 빠른 반복 개발에 최적화됐다. 네이티브 오디오 포함 최대 4K 영상 생성을 지원하며, 실시간 에이전트·대규모 앱 빌드를 타깃으로 한다.
+        </p>
+      </div>
+
+      <div class="card-footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#C8B0FF;">GOOGLE AI</div>
+          <div class="source-url">ai.google.dev/gemini-api/docs/video</div>
+        </div>
+        <div class="read-btn" style="border-color:#C8B0FF; background:rgba(200,176,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#C8B0FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 07: 이미지/영상 AI #3 ===================== -->
+    <div class="card" id="card-7">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid6" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid6)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(200,176,255,0.7);"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">07 / 08</div>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div class="cat-chip" style="border-color:rgba(200,176,255,0.4); background:rgba(200,176,255,0.12);">
+          <span class="cat-label" style="color:#C8B0FF;">CAT.02</span>
+          <span class="cat-dot" style="color:rgba(200,176,255,0.5);">·</span>
+          <span class="cat-name">이미지 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          FLUX.2 Klein FP8<br>소비자 GPU 최적화<br>2.5배 속도 달성
+        </div>
+      </div>
+
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.8;"></div>
+
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          Black Forest Labs와 NVIDIA가 협력해 FLUX.2 Klein에 FP8·NVFP4 양자화를 적용했다. 추론 속도 2.5배 향상·VRAM 60% 절감으로 소비자 GPU에서 서브초 이미지 생성이 가능해졌다. 포즈 제어로 인물 자세 명시적 지정, 스타일·캐릭터 일관성 유지를 위한 멀티 레퍼런스 6개 동시 지원. ComfyUI 완전 통합 제공.
+        </p>
+      </div>
+
+      <div class="card-footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#C8B0FF;">NVIDIA BLOG</div>
+          <div class="source-url">blogs.nvidia.com/rtx-ai-garage-flux-2</div>
+        </div>
+        <div class="read-btn" style="border-color:#C8B0FF; background:rgba(200,176,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#C8B0FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CARD 08: 이미지/영상 AI #4 ===================== -->
+    <div class="card" id="card-8">
+      <svg class="card-grid" width="420" height="560">
+        <defs>
+          <pattern id="grid7" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid7)"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner tr" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner bl" style="border-color: rgba(200,176,255,0.7);"></div>
+      <div class="corner br" style="border-color: rgba(200,176,255,0.7);"></div>
+
+      <div style="position:absolute; top:36px; left:32px; right:32px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+        </div>
+        <div class="card-num">08 / 08</div>
+      </div>
+
+      <div style="position:absolute; top:84px; left:32px;">
+        <div class="cat-chip" style="border-color:rgba(200,176,255,0.4); background:rgba(200,176,255,0.12);">
+          <span class="cat-label" style="color:#C8B0FF;">CAT.02</span>
+          <span class="cat-dot" style="color:rgba(200,176,255,0.5);">·</span>
+          <span class="cat-name">영상 AI</span>
+        </div>
+      </div>
+
+      <div style="position:absolute; top:136px; left:32px; right:32px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:27px; font-weight:700; color:#EDEAE0; line-height:1.45; letter-spacing:-0.01em;">
+          Runway Gen-4.5<br>— 프로 영상 AI<br>워크플로우 표준
+        </div>
+      </div>
+
+      <div style="position:absolute; top:295px; left:32px; width:32px; height:2px; background:#C8B0FF; opacity:0.8;"></div>
+
+      <div style="position:absolute; top:312px; left:32px; right:32px;">
+        <p class="brief-text">
+          Runway Gen-4.5가 프로 크리에이터 최강 영상 AI로 자리매김하고 있다. 레퍼런스 이미지 기반 캐릭터 일관성, 카메라 무브 제어, Motion Brush가 핵심 강점. 2월 API 공개 후 Adobe Premiere·DaVinci Resolve 통합 워크플로우가 정착됐다. Kling 3.0의 광범위한 업데이트에도 프로 제작 현장에서 표준 영상 AI 지위를 유지하고 있다.
+        </p>
+      </div>
+
+      <div class="card-footer" style="border-top:1px solid rgba(200,176,255,0.4);">
+        <div>
+          <div class="source-name" style="color:#C8B0FF;">RUNWAY</div>
+          <div class="source-url">aibusiness.com/runway-gen-4-5</div>
+        </div>
+        <div class="read-btn" style="border-color:#C8B0FF; background:rgba(200,176,255,0.12);">
+          <span class="read-btn-text">원문 보기</span>
+          <span class="read-btn-arrow" style="color:#C8B0FF;">↗</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+      <button id="prevBtn" onclick="changeCard(-1)">←</button>
+      <div class="dots" id="dots"></div>
+      <button id="nextBtn" onclick="changeCard(1)">→</button>
+    </div>
+  </div>
+
+  <script>
+    const TOTAL = 8;
+    let current = 1;
+
+    function getAccentColor(idx) {
+      return idx <= 4 ? '#9BB5FF' : '#C8B0FF';
+    }
+
+    function buildDots() {
+      const container = document.getElementById('dots');
+      container.innerHTML = '';
+      for (let i = 1; i <= TOTAL; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        const accent = getAccentColor(i);
+
+        if (i === current) {
+          dot.classList.add('active');
+          dot.style.background = accent;
+        } else if (i < current) {
+          dot.classList.add('prev');
+          dot.style.background = getAccentColor(i);
+        } else if (i === current + 1) {
+          dot.classList.add('next-prev');
+          dot.style.background = getAccentColor(i);
+        } else {
+          dot.classList.add('future');
+          dot.style.background = '#8A8DA8';
+        }
+        dot.addEventListener('click', () => goTo(i));
+        container.appendChild(dot);
+      }
+    }
+
+    function goTo(n) {
+      document.getElementById('card-' + current).classList.remove('active');
+      current = n;
+      document.getElementById('card-' + current).classList.add('active');
+      buildDots();
+    }
+
+    function changeCard(dir) {
+      const next = current + dir;
+      if (next < 1 || next > TOTAL) return;
+      goTo(next);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') changeCard(-1);
+      if (e.key === 'ArrowRight') changeCard(1);
+    });
+
+    buildDots();
+  </script>
+</body>
+</html>
