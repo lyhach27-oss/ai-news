@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 뉴스 브리핑 | 2026.06.12</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0A0B14;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #EDEAE0;
+}
+.viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+.card-wrap {
+  position: relative;
+  width: 420px;
+  height: 560px;
+}
+.card {
+  position: absolute;
+  inset: 0;
+  width: 420px;
+  height: 560px;
+  background: radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%),
+              radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%),
+              #0A0B14;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.card.active { opacity: 1; pointer-events: all; }
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-btn {
+  background: none;
+  border: 1px solid rgba(155,181,255,0.3);
+  color: #EDEAE0;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+}
+.nav-btn:hover { border-color: rgba(155,181,255,0.7); }
+.dots { display: flex; gap: 6px; align-items: center; }
+.dot { height: 3px; border-radius: 2px; cursor: pointer; transition: all 0.3s; }
+.dot.active { width: 24px; background: #9BB5FF; }
+.dot.past { width: 12px; background: rgba(155,181,255,0.5); }
+.dot.future { width: 8px; background: rgba(155,181,255,0.2); }
+</style>
+</head>
+<body>
+<div class="viewer">
+  <div class="card-wrap">
+    <div class="card active" id="c0"></div>
+    <div class="card" id="c1"></div>
+    <div class="card" id="c2"></div>
+    <div class="card" id="c3"></div>
+    <div class="card" id="c4"></div>
+    <div class="card" id="c5"></div>
+    <div class="card" id="c6"></div>
+    <div class="card" id="c7"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn">←</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="nextBtn">→</button>
+  </div>
+</div>
+
+<script>
+const BIG = { accent:'#9BB5FF', soft:'rgba(155,181,255,0.12)', line:'rgba(155,181,255,0.4)' };
+const IMG = { accent:'#C8B0FF', soft:'rgba(200,176,255,0.12)', line:'rgba(200,176,255,0.4)' };
+
+const news = [
+  {
+    title:'SpaceX SPCX\n나스닥 6/12\n첫 거래 개시',
+    brief:'SpaceX가 오늘 나스닥에서 티커 SPCX로 첫 거래를 시작했다. 공모가 $135/주, $750억 조달 규모로 역대 최대 IPO를 기록하며 미국 증시 역사를 새로 썼다. xAI·Anthropic·OpenAI IPO 행렬 속 AI 기반 우주기업의 공개에 투자자들의 폭발적 관심이 모이고 있다. 개장 초 주가는 공모가 대비 30% 이상 급등해 AI-우주 융복합 기업에 대한 시장의 높은 기대감을 반영했다.',
+    source:'YAHOO FINANCE', url:'finance.yahoo.com/markets',
+    href:'https://finance.yahoo.com/markets/article/spacex-openai-and-anthropic-here-are-the-most-anticipated-ipos-in-2026-114439441.html',
+    color:BIG, cat:'CAT.01', catLabel:'AI 빅뉴스'
+  },
+  {
+    title:'Anthropic 기업가치\n$9,650억·LLM\n글로벌 수익 1위',
+    brief:'Anthropic이 6월 1일 기밀 S-1을 SEC에 제출하며 IPO 절차에 공식 돌입했다. 기업가치 $9,650억이 확인됐으며, 2026년 Q1 글로벌 LLM 수익 점유율이 31.4%로 OpenAI(29%)를 처음으로 추월했다. Claude Mythos 사이버보안 AI(Project Glasswing)는 15개국 150개 기관으로 확산됐다. xAI SPCX 상장을 시작으로 AI 기업 IPO 3파전이 본격화되고 있다.',
+    source:'IG INTERNATIONAL', url:'ig.com/en/news-and-trade-ideas',
+    href:'https://www.ig.com/en/news-and-trade-ideas/spacex-openai-anthropic-2026-ipo-deals-260520',
+    color:BIG, cat:'CAT.01', catLabel:'AI 빅뉴스'
+  },
+  {
+    title:'Microsoft AI\n설비투자 $1,900억\n2026 역대 최대',
+    brief:'Microsoft가 2026 회계연도 AI 인프라 설비투자 총액을 $1,900억으로 공시했다. AI 수요 폭증으로 메모리·스토리지 부품 비용이 $250억 추가돼 당초 계획을 대폭 상회한다. Azure AI 확충과 OpenAI 서비스 데이터센터 확장이 핵심 투자 항목이다. Magnificent 7 중 AI 인프라에 가장 적극적인 투자를 이어가며 클라우드 AI 시장 주도권을 확보하고 있다.',
+    source:'BUILDFASTWITHAI', url:'buildfastwithai.com/blogs',
+    href:'https://www.buildfastwithai.com/blogs/ai-news-today-june-8-2026',
+    color:BIG, cat:'CAT.01', catLabel:'AI 빅뉴스'
+  },
+  {
+    title:'Midjourney V8.1\n6/10 기본 버전 등극\n속도 4~5배↑',
+    brief:'Midjourney가 6월 10일부터 V8.1을 공식 기본 버전으로 전환했다. 표준 작업 속도가 4~5배 빨라지고 네이티브 2K HD 출력이 가능해졌다. 멀티워드 텍스트 렌더링 정확도가 88~92%로 업계 최고 수준이며, 프롬프트 세부 묘사 충실도도 전 버전을 웃돈다. Raw 모드 활성화 시 기본 스타일 없이 순수 프롬프트 결과를 얻을 수 있어 전문가 워크플로우에 최적화됐다.',
+    source:'MIDJOURNEY', url:'updates.midjourney.com',
+    href:'https://updates.midjourney.com/v8-1-updates/',
+    color:IMG, cat:'CAT.02', catLabel:'이미지/영상 AI'
+  },
+  {
+    title:'Seedream 5 Lite\n고밀도 텍스트\n렌더링 역대 최강',
+    brief:'ByteDance가 Seedream 5.0 Lite를 공개하며 이미지 생성 AI 최상위권 경쟁에 합류했다. 고밀도 텍스트 렌더링, 레이아웃 구성, 프롬프트 충실도에서 역대 최강 성능을 달성했다. 인물 정밀도와 소형 텍스트 렌더링이 4.5 대비 대폭 개선됐다. 실시간 웹 검색 통합과 지능형 시각 추론으로 Midjourney·FLUX.2를 정면으로 겨냥한다.',
+    source:'CREATEVISION', url:'createvision.ai/guides',
+    href:'https://createvision.ai/guides/seedream-5-complete-guide',
+    color:IMG, cat:'CAT.02', catLabel:'이미지/영상 AI'
+  },
+  {
+    title:'Kling 3.0\n글로벌 1억 사용자\n224개국 서비스',
+    brief:'Kuaishou의 영상 AI Kling 3.0이 글로벌 가입자 1억 명을 돌파하며 224개국에 서비스를 확대했다. 네이티브 4K·60FPS·5개 언어 립싱크, AI Director 자동 연출이 핵심 강점이다. Artificial Analysis 영상 모델 상위 10개 중 4개를 Kling이 차지하며 영상 AI 최강자로 자리매김했다. MVL 멀티모달 아키텍처로 텍스트·이미지·오디오·영상을 통합 처리한다.',
+    source:'ATLAS CLOUD', url:'atlascloud.ai/blog',
+    href:'https://www.atlascloud.ai/blog/guides/kling-3.0-review-features-pricing-ai-alternatives',
+    color:IMG, cat:'CAT.02', catLabel:'이미지/영상 AI'
+  },
+  {
+    title:'Pika 숏폼 특화\nPikaffects 4종\n크리에이터 대중화',
+    brief:'Pika가 Pikaffects·Pikaswaps·Pikadditions·Pikaformance 4종 숏폼 특화 영상 AI 툴을 풀가동하며 TikTok·Instagram Reels 크리에이터 시장을 공략한다. Pikaformance 립싱크로 아바타 동영상 제작 진입 장벽을 최저 수준으로 낮췄다. 2026년 소셜 크리에이터 대상 영상 AI 1위 플랫폼으로 평가받으며, 대중형 AI 생태계로 영상 AI 저변 확대를 주도하고 있다.',
+    source:'LOVART', url:'lovart.ai/blog',
+    href:'https://www.lovart.ai/blog/video-generators-review',
+    color:IMG, cat:'CAT.02', catLabel:'이미지/영상 AI'
+  }
+];
+
+function logoSVG(accent) {
+  return `<svg width="20" height="20" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2L26 14L14 26L2 14Z" stroke="${accent}" stroke-width="1.5"/><path d="M14 8L20 14L14 20L8 14Z" fill="${accent}"/><circle cx="14" cy="14" r="2" fill="#EDEAE0"/></svg>`;
+}
+
+function gridSVG(uid) {
+  return `<svg style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.06;pointer-events:none" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="g${uid}" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g${uid})"/></svg>`;
+}
+
+function glowLine(accent) {
+  return `<div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,${accent} 40%,${accent} 60%,transparent);opacity:0.7;"></div>`;
+}
+
+function corners(accent) {
+  const s = `border-color:${accent};opacity:0.7;position:absolute;width:14px;height:14px;`;
+  return `<div style="${s}top:18px;left:18px;border-top:1.5px solid;border-left:1.5px solid;"></div><div style="${s}top:18px;right:18px;border-top:1.5px solid;border-right:1.5px solid;"></div><div style="${s}bottom:18px;left:18px;border-bottom:1.5px solid;border-left:1.5px solid;"></div><div style="${s}bottom:18px;right:18px;border-bottom:1.5px solid;border-right:1.5px solid;"></div>`;
+}
+
+function wordmark(accent) {
+  return `<div style="display:flex;align-items:center;gap:8px;">${logoSVG(accent)}<span style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:900;letter-spacing:0.22em;color:#EDEAE0;">VISUAL LAB</span></div>`;
+}
+
+function buildCover(el) {
+  const a = BIG.accent;
+  el.innerHTML = `
+    ${gridSVG('cover')}
+    ${glowLine(a)}
+    ${corners(a)}
+    <div style="position:absolute;top:36px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;">
+      ${wordmark(a)}
+      <div style="border:1px solid ${a};background:${BIG.soft};padding:5px 12px;display:flex;gap:8px;align-items:center;">
+        <div style="width:6px;height:6px;border-radius:50%;background:${a};"></div>
+        <span style="font-size:10px;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:${a};">DAILY</span>
+      </div>
+    </div>
+    <div style="position:absolute;top:108px;left:32px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.35em;color:${a};margin-bottom:10px;">TODAY'S</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:60px;font-weight:900;color:#EDEAE0;line-height:0.95;letter-spacing:-0.02em;">AI</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:34px;font-weight:400;color:#B8BACE;line-height:1.2;margin-top:6px;">briefing.</div>
+      <div style="margin-top:18px;width:120px;height:1px;background:linear-gradient(to right,${a},transparent);opacity:0.8;"></div>
+    </div>
+    <div style="position:absolute;top:318px;left:32px;right:32px;height:1px;background:${BIG.line};"></div>
+    <div style="position:absolute;top:334px;left:32px;right:32px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.4em;color:#8A8DA8;margin-bottom:16px;">INDEX</div>
+      <div style="display:flex;align-items:center;margin-bottom:12px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${a};letter-spacing:0.15em;min-width:56px;">CAT.01</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8A8DA8;flex:1;padding-left:10px;">· AI 빅뉴스</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8BACE;">3건</span>
+      </div>
+      <div style="height:1px;background:rgba(155,181,255,0.1);margin-bottom:12px;"></div>
+      <div style="display:flex;align-items:center;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${IMG.accent};letter-spacing:0.15em;min-width:56px;">CAT.02</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8A8DA8;flex:1;padding-left:10px;">· 이미지 / 영상 AI</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8BACE;">4건</span>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid ${BIG.line};display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A8DA8;letter-spacing:0.1em;">2026.06.12 FRI</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8BACE;letter-spacing:0.15em;">01 / 08</span>
+    </div>
+  `;
+}
+
+function buildNews(el, d, i) {
+  const c = d.color;
+  const num = String(i+2).padStart(2,'0');
+  const titleLines = d.title.split('\n');
+  el.innerHTML = `
+    ${gridSVG('n'+i)}
+    ${glowLine(c.accent)}
+    ${corners(c.accent)}
+    <div style="position:absolute;top:36px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;">
+      ${wordmark(c.accent)}
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8A8DA8;letter-spacing:0.15em;">${num} / 08</span>
+    </div>
+    <div style="position:absolute;top:84px;left:32px;display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid ${c.accent};background:${c.soft};">
+      <span style="font-size:10px;letter-spacing:0.35em;font-family:'JetBrains Mono',monospace;color:${c.accent};">${d.cat}</span>
+      <span style="font-size:9px;color:${c.line};font-family:'JetBrains Mono',monospace;">·</span>
+      <span style="font-size:11px;font-weight:500;letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;">${d.catLabel}</span>
+    </div>
+    <div style="position:absolute;top:136px;left:32px;right:32px;">
+      <div style="font-family:'Noto Serif KR',serif;font-size:29px;font-weight:700;color:#EDEAE0;line-height:1.38;word-break:keep-all;">${titleLines.join('<br>')}</div>
+    </div>
+    <div style="position:absolute;top:302px;left:32px;right:32px;display:flex;align-items:center;gap:12px;">
+      <div style="flex:1;height:1px;background:${c.line};"></div>
+      <div style="width:6px;height:6px;border:1px solid ${c.accent};transform:rotate(45deg);flex-shrink:0;"></div>
+      <div style="flex:1;height:1px;background:${c.line};"></div>
+    </div>
+    <div style="position:absolute;top:318px;left:32px;right:32px;bottom:80px;overflow:hidden;">
+      <div style="font-size:13.5px;line-height:1.65;color:#B8BACE;font-family:'Noto Sans KR',sans-serif;word-break:keep-all;">${d.brief}</div>
+    </div>
+    <div style="position:absolute;bottom:24px;left:32px;right:32px;padding-top:12px;border-top:1px solid ${c.line};display:flex;justify-content:space-between;align-items:flex-end;gap:12px;">
+      <div style="overflow:hidden;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.3em;font-family:'JetBrains Mono',monospace;color:#EDEAE0;white-space:nowrap;">${d.source}</div>
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8A8DA8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.url}</div>
+      </div>
+      <a href="${d.href}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid ${c.accent};background:${c.soft};font-family:'JetBrains Mono',monospace;white-space:nowrap;text-decoration:none;flex-shrink:0;">
+        <span style="font-size:12px;font-weight:500;color:#EDEAE0;">원문 보기</span>
+        <span style="font-size:13px;color:${c.accent};">↗</span>
+      </a>
+    </div>
+  `;
+}
+
+buildCover(document.getElementById('c0'));
+news.forEach((n,i) => buildNews(document.getElementById('c'+(i+1)), n, i));
+
+const total = 8;
+let cur = 0;
+const cards = document.querySelectorAll('.card');
+const dotsEl = document.getElementById('dots');
+
+for (let i=0; i<total; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot '+(i===0?'active':'future');
+  d.onclick = ()=>go(i);
+  dotsEl.appendChild(d);
+}
+
+function go(n) {
+  cards.forEach((c,i)=>c.classList.toggle('active',i===n));
+  document.querySelectorAll('.dot').forEach((d,i)=>{
+    d.className='dot '+(i<n?'past':i===n?'active':'future');
+  });
+  cur=n;
+}
+
+document.getElementById('prevBtn').onclick=()=>{if(cur>0)go(cur-1);};
+document.getElementById('nextBtn').onclick=()=>{if(cur<total-1)go(cur+1);};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'&&cur>0)go(cur-1);
+  if(e.key==='ArrowRight'&&cur<total-1)go(cur+1);
+});
+</script>
+</body>
+</html>
