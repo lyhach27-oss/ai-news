@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISUAL LAB AI 브리핑 | 2026.06.21</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #060710;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .viewer-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card-container {
+      position: relative;
+      width: 420px;
+      height: 560px;
+    }
+    .card {
+      position: absolute;
+      inset: 0;
+      width: 420px;
+      height: 560px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%),
+        #0A0B14;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='g' width='32' height='32' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 32 0 L 0 0 0 32' fill='none' stroke='%23EDEAE0' stroke-width='0.5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3C/svg%3E");
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .card.active { opacity: 1; pointer-events: auto; }
+    .card-inner {
+      position: absolute;
+      inset: 0;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+    }
+    .glow-top {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      opacity: 0.7;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .corner { position: absolute; width: 14px; height: 14px; opacity: 0.7; pointer-events: none; z-index: 2; }
+    .corner.tl { top: 18px; left: 18px; }
+    .corner.tr { top: 18px; right: 18px; }
+    .corner.bl { bottom: 18px; left: 18px; }
+    .corner.br { bottom: 18px; right: 18px; }
+    .wordmark { display: flex; align-items: center; gap: 10px; }
+    .wordmark-text {
+      font-size: 14px; font-weight: 900; letter-spacing: 0.22em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .serif { font-family: 'Noto Serif KR', serif; }
+
+    /* Navigation */
+    .nav {
+      display: flex; align-items: center; gap: 14px; margin-top: 20px;
+    }
+    .nav-btn {
+      width: 36px; height: 36px;
+      background: rgba(155,181,255,0.08);
+      border: 1px solid rgba(155,181,255,0.25);
+      color: #EDEAE0; cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .nav-btn:hover { background: rgba(155,181,255,0.2); }
+    .dots { display: flex; align-items: center; gap: 5px; }
+    .dot {
+      height: 3px; border-radius: 2px; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .dot.active  { width: 18px; background: #9BB5FF; }
+    .dot.past    { width: 4px;  background: rgba(155,181,255,0.45); }
+    .dot.future  { width: 4px;  background: rgba(255,255,255,0.13); }
+  </style>
+</head>
+<body>
+
+<div class="viewer-wrap">
+  <div class="card-container" id="cardContainer"></div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn">←</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="nextBtn">→</button>
+  </div>
+</div>
+
+<script>
+const BIG = {
+  accent:     '#9BB5FF',
+  accentSoft: 'rgba(155,181,255,0.12)',
+  accentLine: 'rgba(155,181,255,0.4)',
+};
+const IMG = {
+  accent:     '#C8B0FF',
+  accentSoft: 'rgba(200,176,255,0.12)',
+  accentLine: 'rgba(200,176,255,0.4)',
+};
+
+const news = [
+  {
+    type: 'BIG', cat: 'CAT.01', catLabel: 'AI 빅뉴스',
+    title: ['Fable 5 수출통제 배후', 'SK텔레콤 중국 연계 의혹'],
+    briefLong: 'WIRED·워싱턴포스트 보도로 Fable 5 수출통제 전모가 드러났다. 백악관은 SK텔레콤의 중국 연계 의혹을 이유로 Anthropic에 수출통제를 발동, SKT 접근 차단을 지시했다. Anthropic 서울 사무소가 6월 17~18일 공식 개소한 가운데, 국제 총괄 Ciauri는 "수일 내 모델 복원을 확신한다"고 밝혔다. 삼성SDS·LG CNS·NAVER·넥슨·한화 등 한국 주요 기업의 Claude 도입도 공식 확인됐다.',
+    source: 'WIRED', url: 'wired.com/story/sk-telecom',
+    href: 'https://llmbase.ai/news/sk-telecom-china-ties-trigger-anthropic-claude-mythos-export-controls/',
+  },
+  {
+    type: 'BIG', cat: 'CAT.01', catLabel: 'AI 빅뉴스',
+    title: ['OpenAI Q1 매출 $57억', '사상 첫 공개·적자 $37억'],
+    briefLong: 'OpenAI가 2026년 1분기 매출 57억 달러를 달성하며 전년 동기 대비 3배 성장했다. 하반기 IPO를 앞두고 처음으로 공개된 분기 실적이지만 주식 기반 보상비 23억 달러를 포함한 37억 달러 순손실도 함께 기록됐다. 매출 급증에도 인프라·인재 투자 비용으로 수익성은 아직 요원한 상황이다. OpenAI는 연매출 250억 달러 돌파를 목표로 하반기 상장을 공식 추진 중이다.',
+    source: 'THE DECODER', url: 'the-decoder.com/openai-q1',
+    href: 'https://the-decoder.com',
+  },
+  {
+    type: 'BIG', cat: 'CAT.01', catLabel: 'AI 빅뉴스',
+    title: ['ChatGPT 예약 작업 출시', '개인 AI 비서로 전격 진화'],
+    briefLong: 'OpenAI가 6월 17일 ChatGPT에 예약 작업(Scheduled Tasks) 기능을 출시했다. 웹·iOS·Android·macOS에 동시 롤아웃된 이번 업데이트로 매일 브리핑 설정, 리마인더 관리, 웹 검색 자동화 등 개인 AI 비서 기능이 대폭 강화됐다. 사이드바에 전용 예약 페이지가 추가돼 모든 자동화 작업을 한 곳에서 관리할 수 있다. 기존 Pulse 기능은 Scheduled Tasks로 통합 종료된다.',
+    source: 'OPENAI', url: 'openai.com/scheduled-tasks',
+    href: 'https://www.msn.com/en-us/news/other/openai-launches-scheduled-tasks-in-chatgpt-on-june-17-2026/gm-GM615B55E4',
+  },
+  {
+    type: 'IMG', cat: 'CAT.02', catLabel: '이미지 / 영상 AI',
+    title: ['Kling 3.0 Turbo 출시', '초고속 영상 미리보기 혁신'],
+    briefLong: 'Kling AI가 6월 17일 Kling 3.0 Turbo를 출시했다. 초당 ¥0.8(720p)의 저렴한 가격에 1~15초 영상을 빠르게 생성하는 크리에이터 미리보기 전용 모드다. 기존 Kling 3.0의 멀티샷 일관성과 오디오 생성 강점을 유지하면서 속도를 대폭 향상시켰다. Omni도 함께 업그레이드돼 3~15초 영상과 4K 편집 입출력을 지원하며 글로벌 1억 사용자를 대상으로 즉시 배포됐다.',
+    source: 'KLING AI', url: 'klingai.com/changelog',
+    href: 'https://www.atlascloud.ai/blog/guides/kling-3.0-turbo-kling-omni',
+  },
+  {
+    type: 'IMG', cat: 'CAT.02', catLabel: '이미지 / 영상 AI',
+    title: ['Hunyuan Image 3.0 공개', '80B 지식 추론 이미지 AI'],
+    briefLong: '텐센트가 Hunyuan Image 3.0을 공개했다. 80B 파라미터 대규모 모델에 세계 지식 추론 기능을 탑재해 더욱 정확하고 풍부한 이미지 생성이 가능해졌다. 기존 Hunyuan 시리즈 대비 텍스트 이해력과 복잡한 장면 표현력이 크게 향상됐다. ComfyUI 통합이 지원돼 로컬 워크플로우에서도 활용 가능하며 상업용 이미지 생성 시장에서 Flux와 직접 경쟁하게 됐다.',
+    source: 'COMFYUIWEB', url: 'comfyuiweb.com/posts',
+    href: 'https://comfyuiweb.com/posts',
+  },
+  {
+    type: 'IMG', cat: 'CAT.02', catLabel: '이미지 / 영상 AI',
+    title: ['Z-Image-Turbo 공개', '소비자 GPU 8스텝 고속 생성'],
+    briefLong: '알리바바 통이(Tongyi) 랩이 Z-Image-Turbo를 공개했다. 6B 파라미터 경량 모델로 8스텝 샘플링만으로 고품질 이미지를 생성한다. 16GB VRAM 소비자급 GPU에서도 원활하게 동작해 로컬 이미지 AI 접근성이 크게 높아졌다. ComfyUI 통합이 지원되며 FLUX·SDXL 대비 속도가 대폭 향상돼 아마추어 크리에이터들의 로컬 워크플로우 진입장벽을 낮춘다.',
+    source: 'COMFYUIWEB', url: 'comfyuiweb.com/posts',
+    href: 'https://comfyuiweb.com/posts',
+  },
+  {
+    type: 'IMG', cat: 'CAT.02', catLabel: '이미지 / 영상 AI',
+    title: ['TripoSplat 이미지→3D', '가우시안 스플랫 즉시 생성'],
+    briefLong: 'Tripo AI가 TripoSplat을 공개했다. 단일 이미지 한 장에서 3D 가우시안 스플랫(3DGS)을 즉시 생성하는 이미지-3D 변환 도구다. 건축 시각화·게임 에셋·VFX 프리비즈 파이프라인에 바로 통합 가능하며, 2D 참조 이미지를 고품질 3D 자산으로 빠르게 전환한다. Tripo AI는 $2억 유니콘 달성 이후 3D AI 생성 기술 연구를 적극 확대하고 있다.',
+    source: 'WAVESPEED', url: 'wavespeed.ai/blog/posts/triposplat',
+    href: 'https://wavespeed.ai/blog/posts/triposplat-image-to-3d/',
+  },
+];
+
+// ─── helpers ──────────────────────────────────────────────
+function wordmark(accent) {
+  return `<div class="wordmark">
+    <svg width="20" height="20" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 2L26 14L14 26L2 14Z" fill="none" stroke="${accent}" stroke-width="1.5"/>
+      <path d="M14 8L20 14L14 20L8 14Z" fill="${accent}"/>
+      <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+    </svg>
+    <span class="wordmark-text" style="color:${accent};">VISUAL LAB</span>
+  </div>`;
+}
+
+function corners(accent) {
+  const b = `border: 1px solid ${accent};`;
+  return `
+    <div class="corner tl" style="border-top:1px solid ${accent};border-left:1px solid ${accent};"></div>
+    <div class="corner tr" style="border-top:1px solid ${accent};border-right:1px solid ${accent};"></div>
+    <div class="corner bl" style="border-bottom:1px solid ${accent};border-left:1px solid ${accent};"></div>
+    <div class="corner br" style="border-bottom:1px solid ${accent};border-right:1px solid ${accent};"></div>`;
+}
+
+function glowTop(accent) {
+  return `<div class="glow-top" style="background:linear-gradient(to right,transparent,${accent} 40%,${accent} 60%,transparent);"></div>`;
+}
+
+// ─── cover card ──────────────────────────────────────────
+function coverCard() {
+  const C = BIG;
+  return `<div class="card active" data-idx="0">
+    ${glowTop(C.accent)}${corners(C.accent)}
+    <div class="card-inner">
+
+      <!-- header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        ${wordmark(C.accent)}
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;
+                    border:1px solid ${C.accent};background:${C.accentSoft};">
+          <div style="width:6px;height:6px;border-radius:50%;background:${C.accent};"></div>
+          <span class="mono" style="font-size:10px;letter-spacing:0.3em;color:${C.accent};">DAILY</span>
+        </div>
+      </div>
+
+      <!-- main title -->
+      <div style="margin-top:36px;">
+        <div class="mono" style="font-size:11px;color:#8A8DA8;letter-spacing:0.25em;margin-bottom:10px;">TODAY'S</div>
+        <div class="serif" style="font-size:58px;font-weight:900;color:#EDEAE0;line-height:1.0;letter-spacing:-0.02em;">AI</div>
+        <div class="serif" style="font-size:36px;font-weight:700;color:#EDEAE0;line-height:1.15;letter-spacing:-0.01em;">briefing.</div>
+        <div style="margin-top:14px;width:120px;height:1px;
+                    background:linear-gradient(to right,${C.accent},transparent);opacity:0.8;"></div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <!-- divider -->
+      <div style="height:1px;background:${C.accentLine};margin-bottom:14px;"></div>
+
+      <!-- index -->
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.3em;color:#8A8DA8;margin-bottom:10px;">INDEX</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;
+                    padding:9px 0;border-bottom:1px solid rgba(155,181,255,0.1);">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="mono" style="font-size:10px;color:${BIG.accent};letter-spacing:0.2em;">CAT.01</span>
+            <span class="mono" style="font-size:11px;color:#B8BACE;">AI 빅뉴스</span>
+          </div>
+          <span class="mono" style="font-size:12px;color:${BIG.accent};letter-spacing:0.1em;">3건</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="mono" style="font-size:10px;color:${IMG.accent};letter-spacing:0.2em;">CAT.02</span>
+            <span class="mono" style="font-size:11px;color:#B8BACE;">이미지 / 영상 AI</span>
+          </div>
+          <span class="mono" style="font-size:12px;color:${IMG.accent};letter-spacing:0.1em;">4건</span>
+        </div>
+      </div>
+
+      <!-- footer -->
+      <div style="display:flex;justify-content:space-between;align-items:center;
+                  margin-top:10px;padding-top:10px;border-top:1px solid ${C.accentLine};">
+        <span class="mono" style="font-size:11px;color:#8A8DA8;letter-spacing:0.08em;">2026.06.21 SUN</span>
+        <span class="mono" style="font-size:11px;color:#8A8DA8;">01 / 08</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── news card ───────────────────────────────────────────
+function newsCard(item, idx) {
+  const C   = item.type === 'BIG' ? BIG : IMG;
+  const pg  = String(idx + 2).padStart(2, '0');
+  return `<div class="card" data-idx="${idx+1}">
+    ${glowTop(C.accent)}${corners(C.accent)}
+    <div class="card-inner">
+
+      <!-- header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        ${wordmark(C.accent)}
+        <span class="mono" style="font-size:11px;color:#8A8DA8;letter-spacing:0.08em;">${pg} / 08</span>
+      </div>
+
+      <!-- cat chip -->
+      <div style="margin-top:18px;">
+        <div style="display:inline-flex;align-items:center;gap:10px;padding:6px 12px;
+                    border:1px solid ${C.accent};background:${C.accentSoft};">
+          <span class="mono" style="font-size:10px;letter-spacing:0.35em;color:${C.accent};">${item.cat}</span>
+          <span class="mono" style="font-size:9px;color:${C.accentLine};">·</span>
+          <span class="mono" style="font-size:11px;font-weight:500;letter-spacing:0.08em;color:#EDEAE0;">${item.catLabel}</span>
+        </div>
+      </div>
+
+      <!-- title -->
+      <div style="margin-top:16px;">
+        ${item.title.map(l => `<div class="serif" style="font-size:26px;font-weight:700;color:#EDEAE0;line-height:1.38;letter-spacing:-0.01em;">${l}</div>`).join('')}
+      </div>
+
+      <!-- separator -->
+      <div style="margin-top:16px;display:flex;align-items:center;gap:10px;">
+        <div style="width:24px;height:1px;background:${C.accent};opacity:0.8;"></div>
+        <div style="width:5px;height:5px;border:1px solid ${C.accent};transform:rotate(45deg);opacity:0.8;flex-shrink:0;"></div>
+        <div style="flex:1;height:1px;background:${C.accentLine};"></div>
+      </div>
+
+      <!-- brief -->
+      <div style="margin-top:13px;flex:1;overflow:hidden;">
+        <p style="font-size:12.5px;line-height:1.78;color:#B8BACE;word-break:keep-all;overflow:hidden;">${item.briefLong}</p>
+      </div>
+
+      <!-- footer -->
+      <div style="padding-top:11px;border-top:1px solid ${C.accentLine};
+                  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;">
+        <div style="min-width:0;">
+          <div class="mono" style="font-size:11px;font-weight:700;letter-spacing:0.28em;color:#EDEAE0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.source}</div>
+          <div class="mono" style="font-size:9.5px;color:#8A8DA8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.url}</div>
+        </div>
+        <a href="${item.href}" target="_blank"
+           style="display:inline-flex;align-items:center;gap:7px;padding:7px 12px;
+                  border:1px solid ${C.accent};background:${C.accentSoft};
+                  text-decoration:none;white-space:nowrap;flex-shrink:0;">
+          <span class="mono" style="font-size:11px;font-weight:500;color:#EDEAE0;">원문 보기</span>
+          <span style="font-size:13px;color:${C.accent};">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── render ──────────────────────────────────────────────
+const container = document.getElementById('cardContainer');
+container.innerHTML = coverCard() + news.map((n,i) => newsCard(n,i)).join('');
+
+// dots
+const dotsEl = document.getElementById('dots');
+for (let i = 0; i < 8; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot ' + (i === 0 ? 'active' : 'future');
+  d.dataset.i = i;
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+}
+
+// slider
+let cur = 0;
+const cards = () => document.querySelectorAll('.card');
+function goTo(idx) {
+  cards().forEach((c,i) => { if(i===cur) c.classList.remove('active'); });
+  cur = idx;
+  cards()[cur].classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i) => {
+    d.className = 'dot ' + (i===cur ? 'active' : i<cur ? 'past' : 'future');
+  });
+}
+document.getElementById('prevBtn').onclick = () => cur > 0 && goTo(cur - 1);
+document.getElementById('nextBtn').onclick = () => cur < 7 && goTo(cur + 1);
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft'  && cur > 0) goTo(cur - 1);
+  if (e.key === 'ArrowRight' && cur < 7) goTo(cur + 1);
+});
+</script>
+</body>
+</html>
