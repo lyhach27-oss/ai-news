@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISUAL LAB AI 카드뉴스 | 2026-07-07</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0A0B14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 20px 0 40px;
+    }
+    .viewer {
+      position: relative;
+      width: 420px;
+    }
+    .card {
+      display: none;
+      width: 420px;
+      height: 560px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #0A0B14 0%, #0A0B14 100%);
+    }
+    .card.active { display: block; }
+
+    /* Grid BG */
+    .grid-bg {
+      position: absolute; inset: 0; opacity: 0.06; pointer-events: none;
+    }
+    /* Glow line top */
+    .glow-line {
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      opacity: 0.7;
+    }
+    /* Corner decorations */
+    .corner {
+      position: absolute; width: 14px; height: 14px; opacity: 0.7;
+    }
+    .corner.tl { top: 18px; left: 18px; border-top: 1.5px solid; border-left: 1.5px solid; }
+    .corner.tr { top: 18px; right: 18px; border-top: 1.5px solid; border-right: 1.5px solid; }
+    .corner.bl { bottom: 18px; left: 18px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+    .corner.br { bottom: 18px; right: 18px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+    /* Wordmark */
+    .wordmark {
+      position: absolute;
+      top: 36px; left: 32px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .wordmark span {
+      font-size: 15px; font-weight: 900;
+      letter-spacing: 0.22em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #EDEAE0;
+    }
+
+    /* Card number */
+    .card-num {
+      position: absolute;
+      top: 36px; right: 32px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8A8DA8;
+      letter-spacing: 0.1em;
+    }
+
+    /* CAT chip */
+    .cat-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 6px 12px;
+      border: 1px solid;
+    }
+    .cat-chip .cat-code {
+      font-size: 10px; letter-spacing: 0.35em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .cat-chip .cat-dot {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .cat-chip .cat-name {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #EDEAE0;
+    }
+
+    /* News card title */
+    .news-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: #EDEAE0;
+      letter-spacing: -0.01em;
+    }
+
+    /* Brief text */
+    .brief-text {
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: #B8BACE;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 400;
+    }
+
+    /* Footer */
+    .card-footer {
+      position: absolute; bottom: 24px; left: 32px; right: 32px;
+      padding-top: 12px;
+      display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;
+    }
+    .footer-source { display: flex; flex-direction: column; gap: 2px; }
+    .footer-source .src-name {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3em;
+      font-family: 'JetBrains Mono', monospace; color: #EDEAE0;
+    }
+    .footer-source .src-url {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace; color: #8A8DA8;
+    }
+    .read-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid;
+      white-space: nowrap; cursor: pointer; text-decoration: none;
+    }
+    .read-btn span:first-child {
+      font-size: 12px; font-weight: 500;
+      font-family: 'JetBrains Mono', monospace; color: #EDEAE0;
+    }
+    .read-btn .arrow { font-size: 13px; }
+
+    /* Nav */
+    .nav {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-top: 20px;
+    }
+    .nav button {
+      background: none; border: 1px solid #2A2D3E;
+      color: #8A8DA8; font-size: 16px; cursor: pointer;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .nav button:hover { border-color: #9BB5FF; color: #9BB5FF; }
+    .dots { display: flex; align-items: center; gap: 6px; }
+    .dot {
+      height: 6px; border-radius: 3px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    /* ========== COVER CARD ========== */
+    #card-01 .daily-badge {
+      position: absolute;
+      top: 32px; right: 32px;
+      display: flex; align-items: center; gap: 8px;
+      border: 1px solid #9BB5FF;
+      background: rgba(155,181,255,0.12);
+      padding: 5px 12px;
+    }
+    #card-01 .daily-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #9BB5FF;
+    }
+    #card-01 .daily-text {
+      font-size: 10px; letter-spacing: 0.3em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #9BB5FF;
+    }
+    #card-01 .hero-text {
+      position: absolute;
+      top: 120px; left: 32px; right: 32px;
+    }
+    #card-01 .hero-today {
+      font-size: 13px; letter-spacing: 0.4em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8A8DA8; margin-bottom: 8px;
+    }
+    #card-01 .hero-ai {
+      font-size: 72px; font-weight: 900;
+      font-family: 'Noto Serif KR', serif;
+      color: #EDEAE0; line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    #card-01 .hero-briefing {
+      font-size: 28px; font-weight: 400;
+      font-family: 'Noto Serif KR', serif;
+      color: #6A6D8A; letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+    #card-01 .hero-glow {
+      width: 120px; height: 1px;
+      background: linear-gradient(to right, #9BB5FF, transparent);
+      margin-top: 18px; opacity: 0.8;
+    }
+    #card-01 .divider-full {
+      position: absolute;
+      top: 320px; left: 32px; right: 32px;
+      height: 1px; background: rgba(155,181,255,0.25);
+    }
+    #card-01 .index-area {
+      position: absolute;
+      top: 338px; left: 32px; right: 32px;
+    }
+    #card-01 .index-label {
+      font-size: 10px; letter-spacing: 0.35em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8A8DA8; margin-bottom: 14px;
+    }
+    #card-01 .index-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(155,181,255,0.1);
+    }
+    #card-01 .index-item:last-child { border-bottom: none; }
+    #card-01 .index-cat {
+      font-size: 10px; letter-spacing: 0.25em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    #card-01 .index-count {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8A8DA8;
+    }
+    #card-01 .cover-footer {
+      position: absolute; bottom: 24px; left: 32px; right: 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(155,181,255,0.2);
+    }
+    #card-01 .cover-date {
+      font-size: 11px; letter-spacing: 0.15em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8A8DA8;
+    }
+    #card-01 .cover-page {
+      font-size: 11px; letter-spacing: 0.1em;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8A8DA8;
+    }
+
+    /* ========== NEWS CARDS COMMON ========== */
+    .news-cat-area {
+      position: absolute;
+      top: 84px; left: 32px; right: 32px;
+    }
+    .news-title-area {
+      position: absolute;
+      top: 136px; left: 32px; right: 32px;
+    }
+    .accent-mark {
+      position: absolute;
+      top: 298px; left: 32px;
+      width: 32px; height: 3px;
+      border-radius: 2px;
+    }
+    .brief-area {
+      position: absolute;
+      top: 318px; left: 32px; right: 32px;
+    }
+  </style>
+</head>
+<body>
+<div class="viewer">
+  <!-- ===== CARD 01: COVER ===== -->
+  <div class="card active" id="card-01">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid1" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid1)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #9BB5FF;"></div>
+    <div class="corner tr" style="border-color: #9BB5FF;"></div>
+    <div class="corner bl" style="border-color: #9BB5FF;"></div>
+    <div class="corner br" style="border-color: #9BB5FF;"></div>
+
+    <!-- Wordmark -->
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+
+    <!-- Daily badge -->
+    <div class="daily-badge">
+      <div class="daily-dot"></div>
+      <span class="daily-text">DAILY</span>
+    </div>
+
+    <!-- Hero text -->
+    <div class="hero-text">
+      <div class="hero-today">TODAY'S</div>
+      <div class="hero-ai">AI</div>
+      <div class="hero-briefing">briefing.</div>
+      <div class="hero-glow"></div>
+    </div>
+
+    <div class="divider-full"></div>
+
+    <div class="index-area">
+      <div class="index-label">INDEX</div>
+      <div class="index-item">
+        <span class="index-cat" style="color:#9BB5FF;">CAT.01 · AI 빅뉴스</span>
+        <span class="index-count">3건</span>
+      </div>
+      <div class="index-item">
+        <span class="index-cat" style="color:#C8B0FF;">CAT.02 · 이미지 / 영상 AI</span>
+        <span class="index-count">4건</span>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <span class="cover-date">2026.07.07 TUE</span>
+      <span class="cover-page">01 / 08</span>
+    </div>
+  </div>
+
+  <!-- ===== CARD 02: AI 빅뉴스 #1 ===== -->
+  <div class="card" id="card-02">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid2" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid2)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #9BB5FF;"></div>
+    <div class="corner tr" style="border-color: #9BB5FF;"></div>
+    <div class="corner bl" style="border-color: #9BB5FF;"></div>
+    <div class="corner br" style="border-color: #9BB5FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">02 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(155,181,255,0.4); background: rgba(155,181,255,0.12);">
+        <span class="cat-code" style="color:#9BB5FF;">CAT.01</span>
+        <span class="cat-dot" style="color: rgba(155,181,255,0.4);">·</span>
+        <span class="cat-name">AI 빅뉴스</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">Claude Fable 5<br>오늘 무료 마지막<br>내일부터 크레딧</div>
+    </div>
+
+    <div class="accent-mark" style="background: #9BB5FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">7월 7일(오늘)이 Anthropic의 Claude Fable 5를 Pro, Max, Team, 일부 Enterprise 구독에서 무료로 이용할 수 있는 마지막 날입니다. 7월 8일부터는 사용량 기반 크레딧 차감 방식으로 전환되며, 주당 50% 포함 이용 한도가 종료됩니다. 지난 6월 24일 과금 전환 발표 이후 2주 과도기가 끝나는 시점으로, 새로운 사용량 크레딧 구조로 사용자별 맞춤 과금 체계가 도입됩니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(155,181,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">ANTHROPIC</span>
+        <span class="src-url">anthropic.com/news</span>
+      </div>
+      <a class="read-btn" href="https://www.anthropic.com/news" target="_blank" style="border-color: rgba(155,181,255,0.4); background: rgba(155,181,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#9BB5FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== CARD 03: AI 빅뉴스 #2 ===== -->
+  <div class="card" id="card-03">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid3" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid3)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #9BB5FF;"></div>
+    <div class="corner tr" style="border-color: #9BB5FF;"></div>
+    <div class="corner bl" style="border-color: #9BB5FF;"></div>
+    <div class="corner br" style="border-color: #9BB5FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">03 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(155,181,255,0.4); background: rgba(155,181,255,0.12);">
+        <span class="cat-code" style="color:#9BB5FF;">CAT.01</span>
+        <span class="cat-dot" style="color: rgba(155,181,255,0.4);">·</span>
+        <span class="cat-name">AI 빅뉴스</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">GPT-5.6 일반 접근<br>창 오늘 개방<br>7월 14일까지</div>
+    </div>
+
+    <div class="accent-mark" style="background: #9BB5FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">OpenAI GPT-5.6 시리즈(Sol·Terra·Luna) 일반 접근 창이 오늘(7월 7일)~14일 개방됩니다. 미 정부 국가안보 사이버보안 역량 검토가 완료되며 2주간 정부 게이팅이 해제됐습니다. 가격은 Sol $5/$30, Terra $2.50/$15, Luna $1/$6(입력/출력, 1M 토큰)이며 Cerebras 파트너십으로 750토큰/초 속도를 지원합니다. API 롤아웃 이후 ChatGPT 통합도 순차 진행될 예정입니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(155,181,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">OPENAI</span>
+        <span class="src-url">openai.com/index/previewing-gpt-5-6-sol</span>
+      </div>
+      <a class="read-btn" href="https://openai.com/index/previewing-gpt-5-6-sol/" target="_blank" style="border-color: rgba(155,181,255,0.4); background: rgba(155,181,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#9BB5FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== CARD 04: AI 빅뉴스 #3 ===== -->
+  <div class="card" id="card-04">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid4" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid4)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #9BB5FF;"></div>
+    <div class="corner tr" style="border-color: #9BB5FF;"></div>
+    <div class="corner bl" style="border-color: #9BB5FF;"></div>
+    <div class="corner br" style="border-color: #9BB5FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#9BB5FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">04 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(155,181,255,0.4); background: rgba(155,181,255,0.12);">
+        <span class="cat-code" style="color:#9BB5FF;">CAT.01</span>
+        <span class="cat-dot" style="color: rgba(155,181,255,0.4);">·</span>
+        <span class="cat-name">AI 빅뉴스</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">Gemini 3.5 Pro<br>7월 17일 연기<br>구글 $2250억 증발</div>
+    </div>
+
+    <div class="accent-mark" style="background: #9BB5FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">Google DeepMind가 Gemini 3.5 Pro 출시를 7월 17일로 최종 연기했습니다. 기업 Vertex AI 사전 테스트에서 수학 추론·SVG 씬 생성·장기 멀티스텝 추론 품질이 기준 미달로 판정됐습니다. 6월 공개 불발에 이어 추가 지연으로 투자자 신뢰가 흔들리며 구글 시총이 약 $2250억 증발했습니다. Gemini 3.5 Pro는 2M 토큰 컨텍스트, 약 $1.25/$10 가격으로 출시 예정입니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(155,181,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">GEEKY GADGETS</span>
+        <span class="src-url">geeky-gadgets.com/gemini-pro-...</span>
+      </div>
+      <a class="read-btn" href="https://www.geeky-gadgets.com/gemini-pro-scraps-base-model/" target="_blank" style="border-color: rgba(155,181,255,0.4); background: rgba(155,181,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#9BB5FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== CARD 05: 이미지/영상 AI #1 ===== -->
+  <div class="card" id="card-05">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid5" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid5)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #C8B0FF;"></div>
+    <div class="corner tr" style="border-color: #C8B0FF;"></div>
+    <div class="corner bl" style="border-color: #C8B0FF;"></div>
+    <div class="corner br" style="border-color: #C8B0FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">05 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span class="cat-code" style="color:#C8B0FF;">CAT.02</span>
+        <span class="cat-dot" style="color: rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">Wan 2.7 T2V·I2V<br>·R2V·편집 4모드<br>ComfyUI 통합</div>
+    </div>
+
+    <div class="accent-mark" style="background: #C8B0FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">알리바바 텅이랩의 Wan 2.7이 텍스트→영상, 이미지→영상, 레퍼런스→영상, 편집 총 4가지 모드를 통합한 오픈소스 영상 AI로 주목받고 있습니다. 최대 1080P·15초 고화질 영상을 생성하며 오디오 동기화, 캐릭터·음성 클로닝, 9그리드 I2V를 지원합니다. ComfyUI 공식 통합으로 커스텀 워크플로우 구성이 가능하며 오픈 웨이트 모델 공개로 자체 서버 호스팅도 지원해 엔터프라이즈 도입이 확산되고 있습니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">MINDSTUDIO</span>
+        <span class="src-url">mindstudio.ai/blog/wan-2-7-...</span>
+      </div>
+      <a class="read-btn" href="https://www.mindstudio.ai/blog/wan-2-7-ai-video-model-features-release-timeline" target="_blank" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#C8B0FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== CARD 06: 이미지/영상 AI #2 ===== -->
+  <div class="card" id="card-06">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid6" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid6)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #C8B0FF;"></div>
+    <div class="corner tr" style="border-color: #C8B0FF;"></div>
+    <div class="corner bl" style="border-color: #C8B0FF;"></div>
+    <div class="corner br" style="border-color: #C8B0FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">06 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span class="cat-code" style="color:#C8B0FF;">CAT.02</span>
+        <span class="cat-dot" style="color: rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">Seedance 2.0+Wan 2.7<br>Mootion 영화급<br>캐릭터 제어</div>
+    </div>
+
+    <div class="accent-mark" style="background: #C8B0FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">ByteDance의 Seedance 2.0과 알리바바의 Wan 2.7이 Mootion 플랫폼에 동시 탑재됐습니다. 두 모델 모두 영화급 캐릭터 일관성, 씬 컨트롤, 파인그레인드 모션 제어를 지원합니다. Seedance 2.0은 Cinema-Grade 캐릭터 일관성·표정·동작 세밀 제어가 강점이며, Wan 2.7은 레퍼런스 기반 영상 생성이 특화돼 있습니다. ByteDance는 후속 Seedance 2.5의 7월 글로벌 API 개방도 예고했습니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">BLOCKCHAIN NEWS</span>
+        <span class="src-url">blockchain.news/ainews/seedance-2-0-...</span>
+      </div>
+      <a class="read-btn" href="https://blockchain.news/ainews/seedance-2-0-and-wan-2-7-on-mootion-latest-ai-video-breakthrough-with-cinema-grade-control-and-character-consistency" target="_blank" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#C8B0FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== CARD 07: 이미지/영상 AI #3 ===== -->
+  <div class="card" id="card-07">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid7" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid7)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #C8B0FF;"></div>
+    <div class="corner tr" style="border-color: #C8B0FF;"></div>
+    <div class="corner bl" style="border-color: #C8B0FF;"></div>
+    <div class="corner br" style="border-color: #C8B0FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">07 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span class="cat-code" style="color:#C8B0FF;">CAT.02</span>
+        <span class="cat-dot" style="color: rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">FLUX.2 Klein 4B·9B<br>서브초 생성<br>소비자 GPU 표준</div>
+    </div>
+
+    <div class="accent-mark" style="background: #C8B0FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">Black Forest Labs의 FLUX.2 Klein이 4B·9B 두 가지 파라미터 버전으로 소비자 GPU에서 0.5초 미만 이미지 생성을 실현하며 로컬 AI 이미지 생성의 새 표준으로 자리잡고 있습니다. 최대 4MP 포토리얼 출력을 지원하며 조명·피부·패브릭·손 디테일이 대폭 향상됐습니다. ComfyUI가 FLUX.2 전 라인업의 공식 레퍼런스 환경으로 채택됐으며, 전문 팀들은 상업 API(Dev)+로컬(Klein) 투 트랙 운영을 주류 워크플로우로 정착시키고 있습니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">THUNDER COMPUTE</span>
+        <span class="src-url">thundercompute.com/blog/flux-comfyui-...</span>
+      </div>
+      <a class="read-btn" href="https://www.thundercompute.com/blog/flux-comfyui-ai-image-generation" target="_blank" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#C8B0FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== CARD 08: 이미지/영상 AI #4 ===== -->
+  <div class="card" id="card-08">
+    <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid8" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="560" fill="url(#grid8)"/>
+    </svg>
+    <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+    <div class="corner tl" style="border-color: #C8B0FF;"></div>
+    <div class="corner tr" style="border-color: #C8B0FF;"></div>
+    <div class="corner bl" style="border-color: #C8B0FF;"></div>
+    <div class="corner br" style="border-color: #C8B0FF;"></div>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 28 28">
+        <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" fill="none" stroke="#C8B0FF" stroke-width="1.5"/>
+        <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+        <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+      </svg>
+      <span>VISUAL LAB</span>
+    </div>
+    <div class="card-num">08 / 08</div>
+
+    <div class="news-cat-area">
+      <div class="cat-chip" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span class="cat-code" style="color:#C8B0FF;">CAT.02</span>
+        <span class="cat-dot" style="color: rgba(200,176,255,0.4);">·</span>
+        <span class="cat-name">이미지 / 영상 AI</span>
+      </div>
+    </div>
+
+    <div class="news-title-area">
+      <div class="news-title">영상 AI 6강 구도<br>Sora API 9월<br>일몰 전환 촉박</div>
+    </div>
+
+    <div class="accent-mark" style="background: #C8B0FF;"></div>
+
+    <div class="brief-area">
+      <p class="brief-text">Veo 3.1·Sora 2·Runway Gen-4.5·Kling 3.0·MiniMax Hailuo 2.3·Luma Ray 3의 6강 구도가 2026년 AI 영상 시장을 재편하고 있습니다. OpenAI Sora 앱이 4월 종료된 데 이어 API도 9월 공식 일몰이 예고되면서 기업 전환 압박이 가속되고 있습니다. Kling 3.0은 초당 $0.084(오디오 포함)로 가성비 선두이며, Veo 3.1은 엔터프라이즈 안정성에서 강세를 보입니다. Seedance 2.0·Wan 2.7·SkyReels 등 신흥 모델도 아레나 상위권에 진입해 경쟁이 더욱 치열해지고 있습니다.</p>
+    </div>
+
+    <div class="card-footer" style="border-top: 1px solid rgba(200,176,255,0.4);">
+      <div class="footer-source">
+        <span class="src-name">BUILDMVPFAST</span>
+        <span class="src-url">buildmvpfast.com/articles/video-generation-ai</span>
+      </div>
+      <a class="read-btn" href="https://www.buildmvpfast.com/articles/best-llms-2026-guide/video-generation-ai" target="_blank" style="border-color: rgba(200,176,255,0.4); background: rgba(200,176,255,0.12);">
+        <span>원문 보기</span>
+        <span class="arrow" style="color:#C8B0FF;">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button id="prev-btn">←</button>
+    <div class="dots" id="dots"></div>
+    <button id="next-btn">→</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 8;
+  let current = 0;
+
+  const cards = document.querySelectorAll('.card');
+  const dotsContainer = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function getAccent(idx) {
+    return idx === 0 || idx <= 3 ? '#9BB5FF' : '#C8B0FF';
+  }
+
+  function updateDots() {
+    const dotEls = dotsContainer.querySelectorAll('.dot');
+    dotEls.forEach((dot, i) => {
+      const accent = getAccent(current);
+      if (i === current) {
+        dot.style.width = '20px';
+        dot.style.background = accent;
+        dot.style.opacity = '1';
+      } else if (i < current) {
+        dot.style.width = '6px';
+        dot.style.background = accent;
+        dot.style.opacity = '0.4';
+      } else {
+        dot.style.width = '6px';
+        dot.style.background = '#8A8DA8';
+        dot.style.opacity = '0.3';
+      }
+    });
+  }
+
+  function goTo(idx) {
+    cards[current].classList.remove('active');
+    current = Math.max(0, Math.min(TOTAL - 1, idx));
+    cards[current].classList.add('active');
+    updateDots();
+  }
+
+  document.getElementById('prev-btn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next-btn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  updateDots();
+</script>
+</body>
+</html>

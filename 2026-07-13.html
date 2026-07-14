@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISUAL LAB AI 브리핑 | 2026.07.13</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0A0B14;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 24px 16px 40px;
+  }
+  .viewer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .card-wrap {
+    position: relative;
+    width: 420px;
+    height: 560px;
+  }
+  .card {
+    position: absolute;
+    top: 0; left: 0;
+    width: 420px;
+    height: 560px;
+    background:
+      radial-gradient(ellipse at 80% 0%, rgba(120,140,255,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 0% 100%, rgba(200,176,255,0.08) 0%, transparent 50%),
+      linear-gradient(180deg, #0A0B14 0%, #0A0B14 100%);
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    user-select: none;
+  }
+  .card.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Grid background */
+  .grid-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+  }
+  /* Glow line top */
+  .glow-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    z-index: 1;
+    opacity: 0.7;
+  }
+  /* Corner decorations */
+  .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    z-index: 2;
+    opacity: 0.7;
+  }
+  .corner.tl { top: 18px; left: 18px; border-top: 1.5px solid; border-left: 1.5px solid; }
+  .corner.tr { top: 18px; right: 18px; border-top: 1.5px solid; border-right: 1.5px solid; }
+  .corner.bl { bottom: 18px; left: 18px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+  .corner.br { bottom: 18px; right: 18px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+  /* Card content */
+  .card-inner {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 32px;
+  }
+  /* Wordmark */
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 36px;
+  }
+  .wordmark-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.22em;
+    color: #EDEAE0;
+  }
+  .wordmark-right {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #8A8DA8;
+    letter-spacing: 0.1em;
+  }
+  /* DAILY badge */
+  .daily-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border: 1px solid;
+    margin-left: auto;
+  }
+  .daily-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .daily-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    font-weight: 600;
+  }
+  /* CAT chip */
+  .cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border: 1px solid;
+    margin-top: 84px;
+    align-self: flex-start;
+  }
+  .cat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    font-weight: 600;
+  }
+  .cat-dot-sep {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+  }
+  .cat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #EDEAE0;
+  }
+  /* Title */
+  .card-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #EDEAE0;
+    line-height: 1.4;
+    margin-top: 16px;
+  }
+  /* Accent mark */
+  .accent-mark {
+    width: 32px;
+    height: 2px;
+    margin-top: 16px;
+    border-radius: 1px;
+  }
+  /* Brief text */
+  .brief-text {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #B8BACE;
+    line-height: 1.75;
+    margin-top: 14px;
+    flex: 1;
+    overflow: hidden;
+  }
+  /* Footer */
+  .card-footer {
+    position: absolute;
+    bottom: 24px;
+    left: 32px;
+    right: 32px;
+    padding-top: 12px;
+    border-top: 1px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .footer-source {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .footer-src-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: #EDEAE0;
+  }
+  .footer-src-url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #8A8DA8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .footer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .footer-btn-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #EDEAE0;
+  }
+  .footer-btn-arrow {
+    font-size: 13px;
+  }
+  /* Cover specific */
+  .cover-hero {
+    margin-top: 60px;
+    flex: 1;
+  }
+  .cover-today {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    color: #8A8DA8;
+    margin-bottom: 8px;
+  }
+  .cover-ai {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 62px;
+    font-weight: 900;
+    color: #EDEAE0;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .cover-briefing {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: #8A8DA8;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+  .cover-glow-sep {
+    width: 120px;
+    height: 1px;
+    margin-top: 20px;
+    opacity: 0.7;
+  }
+  .cover-divider {
+    width: 100%;
+    height: 1px;
+    background: #1E2035;
+    margin-top: 24px;
+  }
+  .cover-index {
+    margin-top: 20px;
+  }
+  .cover-index-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: #8A8DA8;
+    margin-bottom: 14px;
+  }
+  .cover-index-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #1A1C2E;
+  }
+  .cover-index-cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    font-weight: 600;
+  }
+  .cover-index-name {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    color: #B8BACE;
+  }
+  .cover-index-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8A8DA8;
+  }
+  .cover-footer {
+    position: absolute;
+    bottom: 24px;
+    left: 32px;
+    right: 32px;
+    padding-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cover-footer-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #8A8DA8;
+  }
+  .cover-footer-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #8A8DA8;
+    letter-spacing: 0.1em;
+  }
+  .cover-footer-line {
+    width: 100%;
+    height: 1px;
+    background: #1E2035;
+    position: absolute;
+    top: 0; left: 0;
+  }
+  /* Navigation */
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #8A8DA8;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.1); color: #EDEAE0; }
+  .dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot {
+    height: 4px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="viewer">
+  <div class="card-wrap">
+
+    <!-- CARD 01: COVER -->
+    <div class="card active" id="card-1">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid1" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid1)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #9BB5FF;"></div>
+      <div class="corner tr" style="border-color: #9BB5FF;"></div>
+      <div class="corner bl" style="border-color: #9BB5FF;"></div>
+      <div class="corner br" style="border-color: #9BB5FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <div class="daily-badge" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+            <div class="daily-dot" style="background: #9BB5FF;"></div>
+            <span class="daily-text" style="color: #9BB5FF;">DAILY</span>
+          </div>
+        </div>
+        <div class="cover-hero">
+          <p class="cover-today">TODAY'S</p>
+          <p class="cover-ai">AI</p>
+          <p class="cover-briefing">briefing.</p>
+          <div class="cover-glow-sep" style="background: linear-gradient(to right, #9BB5FF, transparent);"></div>
+        </div>
+        <div class="cover-divider"></div>
+        <div class="cover-index">
+          <p class="cover-index-label">INDEX</p>
+          <div class="cover-index-row">
+            <span class="cover-index-cat" style="color: #9BB5FF;">CAT.01</span>
+            <span class="cover-index-name">AI 빅뉴스</span>
+            <span class="cover-index-count" style="color: #9BB5FF;">3건</span>
+          </div>
+          <div class="cover-index-row">
+            <span class="cover-index-cat" style="color: #C8B0FF;">CAT.02</span>
+            <span class="cover-index-name">이미지 / 영상 AI</span>
+            <span class="cover-index-count" style="color: #C8B0FF;">4건</span>
+          </div>
+        </div>
+        <div class="cover-footer">
+          <div class="cover-footer-line"></div>
+          <span class="cover-footer-date">2026.07.13 MON</span>
+          <span class="cover-footer-num">01 / 08</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 02: BIG NEWS 1 - GPT-5.6 Sol Ultra -->
+    <div class="card" id="card-2">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid2" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid2)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #9BB5FF;"></div>
+      <div class="corner tr" style="border-color: #9BB5FF;"></div>
+      <div class="corner bl" style="border-color: #9BB5FF;"></div>
+      <div class="corner br" style="border-color: #9BB5FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">02 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+          <span class="cat-num" style="color: #9BB5FF;">CAT.01</span>
+          <span class="cat-dot-sep" style="color: rgba(155,181,255,0.4);">·</span>
+          <span class="cat-label">AI 빅뉴스</span>
+        </div>
+        <h2 class="card-title">GPT-5.6 Sol Ultra<br>50년 수학 난제<br>1시간 만에 증명</h2>
+        <div class="accent-mark" style="background: #9BB5FF;"></div>
+        <p class="brief-text">OpenAI의 GPT-5.6 Sol Ultra가 1973년부터 미해결이었던 '사이클 이중 커버 추측(Cycle Double Cover Conjecture)'을 64개 서브에이전트 병렬 협업으로 단 1시간 내에 증명했다. 이 추측은 브릿지 없는 모든 그래프에 엣지를 정확히 두 번씩 덮는 사이클 집합이 존재하는지를 묻는 그래프 이론 난제다. 700단어 프롬프트와 멀티에이전트 오케스트레이션 전략이 함께 공개돼 복잡한 추론 과제 해결의 새 기준을 제시했다. 수학계 독립 검증은 아직 진행 중이다.</p>
+        <div class="card-footer" style="border-color: rgba(155,181,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">THE-DECODER</span>
+            <span class="footer-src-url">the-decoder.com/openais-gpt-5-6...</span>
+          </div>
+          <a href="https://the-decoder.com/openais-gpt-5-6-sol-ultra-reportedly-solves-a-50-year-old-math-problem-in-under-an-hour/" target="_blank" class="footer-btn" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #9BB5FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 03: BIG NEWS 2 - NVIDIA Nemotron -->
+    <div class="card" id="card-3">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid3" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid3)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #9BB5FF;"></div>
+      <div class="corner tr" style="border-color: #9BB5FF;"></div>
+      <div class="corner bl" style="border-color: #9BB5FF;"></div>
+      <div class="corner br" style="border-color: #9BB5FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">03 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+          <span class="cat-num" style="color: #9BB5FF;">CAT.01</span>
+          <span class="cat-dot-sep" style="color: rgba(155,181,255,0.4);">·</span>
+          <span class="cat-label">AI 빅뉴스</span>
+        </div>
+        <h2 class="card-title">NVIDIA, 비전·오디오·언어<br>통합 오픈 멀티모달<br>모델 Nemotron 공개</h2>
+        <div class="accent-mark" style="background: #9BB5FF;"></div>
+        <p class="brief-text">NVIDIA가 비전·오디오·언어를 단일 아키텍처로 통합한 오픈 멀티모달 추론 모델 Nemotron 3 Nano Omni를 출시했다. 30B 총 파라미터에 활성 파라미터 3B인 MoE 구조로, 동급 대비 9배 높은 처리량을 달성하면서 추론 비용을 대폭 절감했다. 복잡한 문서 인텔리전스, 영상, 오디오 이해 등 6개 리더보드에서 1위를 기록했다. HuggingFace·OpenRouter·NVIDIA NIM 마이크로서비스로 공개됐으며 Palantir·Foxconn 등이 이미 도입해 사용 중이다.</p>
+        <div class="card-footer" style="border-color: rgba(155,181,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">NVIDIA BLOG</span>
+            <span class="footer-src-url">blogs.nvidia.com/blog/nemotron...</span>
+          </div>
+          <a href="https://blogs.nvidia.com/blog/nemotron-3-nano-omni-multimodal-ai-agents/" target="_blank" class="footer-btn" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #9BB5FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 04: BIG NEWS 3 - Kling $3B -->
+    <div class="card" id="card-4">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid4" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid4)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #9BB5FF 40%, #9BB5FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #9BB5FF;"></div>
+      <div class="corner tr" style="border-color: #9BB5FF;"></div>
+      <div class="corner bl" style="border-color: #9BB5FF;"></div>
+      <div class="corner br" style="border-color: #9BB5FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#9BB5FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#9BB5FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">04 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+          <span class="cat-num" style="color: #9BB5FF;">CAT.01</span>
+          <span class="cat-dot-sep" style="color: rgba(155,181,255,0.4);">·</span>
+          <span class="cat-label">AI 빅뉴스</span>
+        </div>
+        <h2 class="card-title">Kling AI $30억 투자 유치<br>기업가치 $180억<br>달러 돌파</h2>
+        <div class="accent-mark" style="background: #9BB5FF;"></div>
+        <p class="brief-text">중국 AI 영상 생성 선두 Kling이 30억 달러 규모의 신규 펀딩을 완료해 기업가치 180억 달러를 돌파했다. 미국 경쟁사 Runway·Pika를 압도하는 역대 최대 AI 영상 투자로, 글로벌 패권 경쟁이 가속화됐다. Kling v3는 아레나 ELO 2040점으로 텍스트-투-비디오 리더보드 1위를 달리며 5개 언어 립싱크와 멀티샷 오디오 타임라인을 지원한다. 이번 자금은 글로벌 인프라 확장과 API 생태계 강화에 투입될 예정이다.</p>
+        <div class="card-footer" style="border-color: rgba(155,181,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">SEOUL ECONOMIC DAILY</span>
+            <span class="footer-src-url">en.sedaily.com/international/2026...</span>
+          </div>
+          <a href="https://en.sedaily.com/international/2026/07/05/chinas-video-ai-leader-kling-raises-3-billion-to-battle" target="_blank" class="footer-btn" style="border-color: #9BB5FF; background: rgba(155,181,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #9BB5FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 05: IMG AI 1 - Meta Muse Image -->
+    <div class="card" id="card-5">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid5" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid5)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #C8B0FF;"></div>
+      <div class="corner tr" style="border-color: #C8B0FF;"></div>
+      <div class="corner bl" style="border-color: #C8B0FF;"></div>
+      <div class="corner br" style="border-color: #C8B0FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">05 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+          <span class="cat-num" style="color: #C8B0FF;">CAT.02</span>
+          <span class="cat-dot-sep" style="color: rgba(200,176,255,0.4);">·</span>
+          <span class="cat-label">이미지 AI</span>
+        </div>
+        <h2 class="card-title">메타 Muse Image 출시<br>Instagram·WhatsApp<br>무료 이미지 생성</h2>
+        <div class="accent-mark" style="background: #C8B0FF;"></div>
+        <p class="brief-text">Meta 슈퍼인텔리전스 랩이 만든 AI 이미지 생성 모델 Muse Image가 Meta AI 앱·Instagram Stories·WhatsApp에서 무료로 공개됐다. 복잡한 프롬프트를 고급 추론으로 해석해 여러 사진을 자연스럽게 합성하는 것이 특징이다. 30개 이상의 AI 효과를 Instagram Stories에 적용하거나 WhatsApp 채팅 내에서 직접 이미지를 생성할 수 있다. @멘션으로 공개 인스타그램 계정을 레퍼런스로 활용하는 기능이 포함돼 초상권 논란도 일고 있다.</p>
+        <div class="card-footer" style="border-color: rgba(200,176,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">TECHCRUNCH</span>
+            <span class="footer-src-url">techcrunch.com/2026/07/07/meta...</span>
+          </div>
+          <a href="https://techcrunch.com/2026/07/07/meta-rolls-out-muse-a-new-ai-image-generator/" target="_blank" class="footer-btn" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #C8B0FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 06: IMG AI 2 - xAI Grok Imagine -->
+    <div class="card" id="card-6">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid6" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid6)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #C8B0FF;"></div>
+      <div class="corner tr" style="border-color: #C8B0FF;"></div>
+      <div class="corner bl" style="border-color: #C8B0FF;"></div>
+      <div class="corner br" style="border-color: #C8B0FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">06 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+          <span class="cat-num" style="color: #C8B0FF;">CAT.02</span>
+          <span class="cat-dot-sep" style="color: rgba(200,176,255,0.4);">·</span>
+          <span class="cat-label">이미지 AI</span>
+        </div>
+        <h2 class="card-title">xAI Grok Imagine 완성<br>Grok 이미지 생성<br>기능 정식 통합</h2>
+        <div class="accent-mark" style="background: #C8B0FF;"></div>
+        <p class="brief-text">xAI가 Grok의 이미지 생성 기능인 Grok Imagine를 완성해 멀티모달 역량을 강화했다. Grok 플랫폼에서 텍스트-투-이미지 생성이 정식 지원되며, xAI의 언어·이미지·분석 통합 AI 슈퍼앱 전략이 본격화됐다. 이로써 OpenAI·Anthropic·Google·Meta·xAI 등 주요 AI 플랫폼 모두 이미지 생성을 핵심 기능으로 탑재하게 됐다. 이미지 생성 AI 시장이 독립 서비스를 넘어 슈퍼앱 통합 전쟁으로 진화하고 있다.</p>
+        <div class="card-footer" style="border-color: rgba(200,176,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">BASENOR</span>
+            <span class="footer-src-url">basenor.com/blogs/news/grok-imagine...</span>
+          </div>
+          <a href="https://www.basenor.com/blogs/news/grok-imagine-is-done-xai-completes-image-generation-feature" target="_blank" class="footer-btn" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #C8B0FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 07: IMG AI 3 - Seedance 2.5 API -->
+    <div class="card" id="card-7">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid7" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid7)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #C8B0FF;"></div>
+      <div class="corner tr" style="border-color: #C8B0FF;"></div>
+      <div class="corner bl" style="border-color: #C8B0FF;"></div>
+      <div class="corner br" style="border-color: #C8B0FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">07 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+          <span class="cat-num" style="color: #C8B0FF;">CAT.02</span>
+          <span class="cat-dot-sep" style="color: rgba(200,176,255,0.4);">·</span>
+          <span class="cat-label">영상 AI</span>
+        </div>
+        <h2 class="card-title">Seedance 2.5 공식 API<br>30초 4K 단일 패스<br>생성 지원</h2>
+        <div class="accent-mark" style="background: #C8B0FF;"></div>
+        <p class="brief-text">ByteDance Volcano Engine의 Seedance 2.5가 공식 API로 배포됐다. 세그먼트 스티칭 없이 단일 패스로 30초 네이티브 4K 영상을 생성하며, 최대 50개의 멀티모달 레퍼런스를 동시에 입력할 수 있다. 공간 제어 워크플로우와 의미 기반 편집 기능을 새롭게 도입해 영화·광고급 제작을 AI로 자동화한다. Kling 3.0·Veo 3.1과 함께 2026년 영상 AI 3강 구도를 형성하며 네이티브 오디오가 핵심 차별화 요소로 부상 중이다.</p>
+        <div class="card-footer" style="border-color: rgba(200,176,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">KLINGAIO</span>
+            <span class="footer-src-url">klingaio.com/blogs/seedance-2_5...</span>
+          </div>
+          <a href="https://klingaio.com/blogs/seedance-2_5-official-release" target="_blank" class="footer-btn" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #C8B0FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 08: IMG AI 4 - Wan 2.7 API -->
+    <div class="card" id="card-8">
+      <svg class="grid-bg" width="420" height="560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid8" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#EDEAE0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="420" height="560" fill="url(#grid8)" opacity="0.06"/>
+      </svg>
+      <div class="glow-line" style="background: linear-gradient(to right, transparent, #C8B0FF 40%, #C8B0FF 60%, transparent);"></div>
+      <div class="corner tl" style="border-color: #C8B0FF;"></div>
+      <div class="corner tr" style="border-color: #C8B0FF;"></div>
+      <div class="corner bl" style="border-color: #C8B0FF;"></div>
+      <div class="corner br" style="border-color: #C8B0FF;"></div>
+      <div class="card-inner">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <path d="M 14 2 L 26 14 L 14 26 L 2 14 Z" stroke="#C8B0FF" stroke-width="1.5"/>
+            <path d="M 14 8 L 20 14 L 14 20 L 8 14 Z" fill="#C8B0FF"/>
+            <circle cx="14" cy="14" r="2" fill="#EDEAE0"/>
+          </svg>
+          <span class="wordmark-text">VISUAL LAB</span>
+          <span class="wordmark-right">08 / 08</span>
+        </div>
+        <div class="cat-chip" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+          <span class="cat-num" style="color: #C8B0FF;">CAT.02</span>
+          <span class="cat-dot-sep" style="color: rgba(200,176,255,0.4);">·</span>
+          <span class="cat-label">영상 AI</span>
+        </div>
+        <h2 class="card-title">Wan 2.7 개발자 API<br>T2V·I2V·R2V·편집<br>4모드 오픈소스 공개</h2>
+        <div class="accent-mark" style="background: #C8B0FF;"></div>
+        <p class="brief-text">알리바바의 Wan 2.7이 Apache 2.0 오픈소스로 공개된 뒤, 다수 플랫폼에서 $0.10/초부터 API로 제공되고 있다. T2V·I2V·R2V·편집 4가지 비디오 모드와 이미지 생성 모델 Wan 2.7-Image를 단일 패밀리로 통합했다. 최대 5개 캐릭터 레퍼런스·퍼스트·라스트 프레임 제어·9그리드 멀티이미지 합성 등 전문 기능을 무료 오픈소스로 제공한다. HuggingFace·GitHub 자체 호스팅이 가능해 기업 비용 최적화 대안으로 부상 중이다.</p>
+        <div class="card-footer" style="border-color: rgba(200,176,255,0.4);">
+          <div class="footer-source">
+            <span class="footer-src-name">ATLAS CLOUD</span>
+            <span class="footer-src-url">atlascloud.ai/models/wan2.7</span>
+          </div>
+          <a href="https://www.atlascloud.ai/models/wan2.7" target="_blank" class="footer-btn" style="border-color: #C8B0FF; background: rgba(200,176,255,0.12);">
+            <span class="footer-btn-text">원문 보기</span>
+            <span class="footer-btn-arrow" style="color: #C8B0FF;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end card-wrap -->
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button class="nav-btn" id="prev-btn">←</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="next-btn">→</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 8;
+  const BIG_ACCENT = '#9BB5FF';
+  const IMG_ACCENT = '#C8B0FF';
+
+  function getAccent(idx) {
+    return idx === 0 || (idx >= 1 && idx <= 3) ? BIG_ACCENT : IMG_ACCENT;
+  }
+
+  let current = 0;
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const dotsEl = document.getElementById('dots');
+
+  // Build dots
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  }
+
+  function updateDots() {
+    const dots = dotsEl.querySelectorAll('.dot');
+    const accent = getAccent(current);
+    dots.forEach((d, i) => {
+      if (i === current) {
+        d.style.width = '20px';
+        d.style.background = accent;
+        d.style.opacity = '1';
+      } else if (i < current) {
+        d.style.width = '6px';
+        d.style.background = accent;
+        d.style.opacity = '0.4';
+      } else {
+        d.style.width = '6px';
+        d.style.background = '#8A8DA8';
+        d.style.opacity = '0.3';
+      }
+    });
+  }
+
+  function goTo(idx) {
+    cards[current].classList.remove('active');
+    current = (idx + TOTAL) % TOTAL;
+    cards[current].classList.add('active');
+    updateDots();
+  }
+
+  document.getElementById('prev-btn').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next-btn').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  updateDots();
+</script>
+</body>
+</html>
